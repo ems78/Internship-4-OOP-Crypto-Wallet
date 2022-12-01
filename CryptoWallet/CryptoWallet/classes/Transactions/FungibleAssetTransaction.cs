@@ -1,21 +1,46 @@
-﻿
-using System;
+﻿using System;
+using System.Collections;
 
 namespace CryptoWallet.classes.Transactions
 {
     public class FungibleAssetTransaction : Transaction
     {
-        // pocetni balans walleta koji salje
+        public double StartingSenderBalance { get; private set; }  
 
-        // krajnji balans walleta koji salje
+        public double FinalSenderBalance { get; private set; } 
 
-        // pocetni balans walleta koji prima
+        public double StartingReceiverBalance { get; private set;  } 
 
-        // krajnji balans walleta koji prima
+        public double FinalReceiverBalance { get; private set;  } 
 
-        public FungibleAssetTransaction(Guid assetAddress, DateTime dateOfTransaction, Guid senderAddress, Guid receiverAddress) : base(assetAddress, dateOfTransaction, senderAddress, receiverAddress)
+        public FungibleAssetTransaction(Guid assetAddress, DateTime dateOfTransaction, Wallet senderWallet, Wallet receiverWallet, double transactionAmount) : base(assetAddress, dateOfTransaction, senderWallet, receiverWallet)
         {
+            StartingSenderBalance = senderWallet.AssetBalance[assetAddress];
+            StartingReceiverBalance = receiverWallet.AssetBalance[assetAddress];
+            FinalSenderBalance = CalculateEndingBalance(true, StartingSenderBalance, transactionAmount);
+            FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
+        }
+
+        private double CalculateEndingBalance(bool isSender, double startingAmount, double transactionAmount)
+        {
+            if (isSender)
+                return startingAmount - transactionAmount;
             
+            return startingAmount + transactionAmount;
+        }
+
+        public override bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
+        {
+            if (IsRevoked) return false;
+            else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
+            {   
+                // message 
+                return false;
+            }
+
+            senderWallet.AssetBalance[AssetAddress] = StartingSenderBalance;
+            receiverWallet.AssetBalance[AssetAddress] = StartingReceiverBalance;
+            return true;
         }
     }
 }

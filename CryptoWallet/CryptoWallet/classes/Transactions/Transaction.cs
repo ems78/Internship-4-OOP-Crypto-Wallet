@@ -3,7 +3,7 @@ using System;
 
 namespace CryptoWallet.classes.Transactions
 {
-    public class Transaction
+    public abstract class Transaction
     {
         public Guid Id { get; }
 
@@ -11,21 +11,38 @@ namespace CryptoWallet.classes.Transactions
 
         public DateTime DateOfTransaction { get; }
 
-        public Guid SenderAddress { get;  }  // adresa walleta koji salje fungible asset
+        public Guid SenderAddress { get;  }  
 
-        public Guid ReceiverAddress { get; }  // adresa walleta koji prima fa
+        public Guid ReceiverAddress { get; } 
         
         public bool IsRevoked { get; private set; }
 
-        // metoda za opozivanje
-
-        public Transaction(Guid assetAddress, DateTime dateOfTransaction, Guid senderAddress, Guid receiverAddress)
+        public Transaction(Guid assetAddress, DateTime dateOfTransaction, Wallet senderWallet, Wallet receiverWallet)
         {
             Id = new Guid();
             AssetAddress = assetAddress;
             DateOfTransaction = dateOfTransaction;
-            SenderAddress = senderAddress;
-            ReceiverAddress = receiverAddress;
+            SenderAddress = senderWallet.Address;
+            ReceiverAddress = receiverWallet.Address;
+        }
+
+        public virtual bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet)
+        {
+            if (IsRevoked)
+            {   
+                // message?
+                return false;
+            }
+            else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
+            {
+                // message
+                return false;
+            }
+
+            senderWaller.OwnedNonFungibleAssets.Add(AssetAddress);
+            receiverWallet.OwnedNonFungibleAssets.Remove(ReceiverAddress);
+            IsRevoked = true;
+            return true;
         }
     }
 }

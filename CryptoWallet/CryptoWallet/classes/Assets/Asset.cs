@@ -2,11 +2,11 @@
 
 namespace CryptoWallet.classes.Assets
 {
-    public class Asset
+    public abstract class Asset
     {
         public Guid Address { get; }
 
-        public string Name { get; }  // unique
+        public string Name { get; }  // unique??
 
 
         public Asset(string name)

@@ -1,6 +1,4 @@
-﻿
-
-namespace CryptoWallet.classes.Assets
+﻿namespace CryptoWallet.classes.Assets
 {
     public class FungibleAsset : Asset
     {

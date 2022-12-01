@@ -1,19 +1,32 @@
-﻿
-
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace CryptoWallet.classes
 {
-    public class Wallet
+    public abstract class Wallet
     {
         public Guid Address { get; }
 
-        // balansi fa koje posjeduje - adresa i kolicina   --> koju strukturu koristit
+        public Dictionary<Guid, double> AssetBalance { get; private set; }
 
-        List<Guid> AllowedFungibleAssets { get; }  // adrese podrzanih fa
+        public List<Guid> OwnedNonFungibleAssets { get; private set; } 
 
-        // adrese transakcija   --> koju strukturu koristit
+        public List<Guid> AllowedAssets { get; }
 
+        public ArrayList TransactionHistory { get; private set; }
+
+        public Wallet(Dictionary<Guid, double> assetBalance, List<Guid> allowedAssets)
+        {
+            Address = new Guid();
+            AssetBalance = assetBalance;
+            AllowedAssets = allowedAssets;
+            TransactionHistory = new ArrayList();
+        }
+
+        public void AddNewTransactionRecord() 
+        {
+            // --
+        }
     }
 }

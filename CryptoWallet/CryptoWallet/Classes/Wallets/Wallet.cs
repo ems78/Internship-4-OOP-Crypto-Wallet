@@ -1,4 +1,5 @@
-﻿using CryptoWallet.Classes.Transactions;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Transactions;
 using System.Collections;
 using System.Transactions;
 
@@ -12,26 +13,34 @@ namespace CryptoWallet.Classes.Wallets
 
         public List<Guid>? OwnedNonFungibleAssets { get; private set; }
 
+        private List<string> _allowedAssetNames = new List<string>();
+
         public List<Guid> AllowedAssets { get; }
 
         public ArrayList TransactionHistory { get; private set; }
 
-        public Wallet(List<Guid> allowedAssets)
+        public Wallet()
         {
             Address = Guid.NewGuid();
-            AssetBalance = new Dictionary<Guid, double>();
-            AllowedAssets = allowedAssets;
-            InitialiseAssetsBalance();
+            AllowedAssets = new();
+            AssetBalance = new();/*
+            foreach (var item in _allowedAssetNames!)
+            {
+                AllowedAssets!.Add(fungibleAssetList[item].Address);
+                AssetBalance.Add(fungibleAssetList[item].Address, 5);
+            }*/
+            //InitialiseAssetsBalance();
             TransactionHistory = new ArrayList();
         }
 
+        /*
         private protected void InitialiseAssetsBalance()
         {
             foreach (var allowedAssetAddress in AllowedAssets)
             {
                 AssetBalance.Add(allowedAssetAddress, 5);
             }
-        }
+        }*/
 
 
         public virtual bool CreateNewFungibleAssetTransactionRecord(Wallet receiverWallet, Guid assetAddress, double amount)

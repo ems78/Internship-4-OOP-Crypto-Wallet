@@ -74,7 +74,7 @@ static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Di
             case 1: // create bitcoin wallet
                 if (UserConfirmation("create a new bitcoin wallet?"))
                 {
-                    BitcoinWallet newWallet = new(new List<Guid>() { fungibleAssetList["bitcoin"].Address, fungibleAssetList["xrp"].Address, fungibleAssetList["ethereum"].Address, fungibleAssetList["tether"].Address });
+                    BitcoinWallet newWallet = new(fungibleAssetList);
                     allWallets.Add(newWallet.Address, newWallet);
                 }
                 // press any key...
@@ -83,19 +83,20 @@ static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Di
             case 2: // create ethereum wallet
                 if (UserConfirmation("create a new ethereum wallet?"))
                 {
-                    EthereumWallet newWallet1 = new(new List<Guid>() { fungibleAssetList["ethereum"].Address, fungibleAssetList["xrp"].Address, fungibleAssetList["bitcoin"].Address, fungibleAssetList["dogecoin"].Address });
-                    allWallets.Add(newWallet1.Address, newWallet1);
+                    EthereumWallet newWallet = new(fungibleAssetList);
+                    allWallets.Add(newWallet.Address, newWallet);
                 }
                 // press any key...
-                break;
+                return;
 
             case 3: // create solana wallet
                 if (UserConfirmation("create a new solana wallet?"))
-                {   
-
+                {
+                    SolanaWallet newWallet = new(fungibleAssetList);
+                    allWallets.Add(newWallet.Address, newWallet);
                 }
                 // press any key...
-                break;
+                return;
 
             case 4:
                 return;
@@ -126,9 +127,9 @@ static void SeedData(Hashtable allWallets, Dictionary<string, FungibleAsset> fun
     fungibleAssetList.Add("bnb", new FungibleAsset("bnb", "BNB", 290.68));
     fungibleAssetList.Add("cosmos", new FungibleAsset("comsos", "ATOM", 10.22));
 
-    BitcoinWallet bitcoinWallet1 = new(new List<Guid>() { fungibleAssetList["bitcoin"].Address, fungibleAssetList["xrp"].Address, fungibleAssetList["ethereum"].Address, fungibleAssetList["tether"].Address });
-    BitcoinWallet bitcoinWallet2 = new(new List<Guid>() { fungibleAssetList["bitcoin"].Address, fungibleAssetList["xrp"].Address, fungibleAssetList["ethereum"].Address, fungibleAssetList["tether"].Address });
-    BitcoinWallet bitcoinWallet3 = new(new List<Guid>() { fungibleAssetList["bitcoin"].Address, fungibleAssetList["xrp"].Address, fungibleAssetList["ethereum"].Address, fungibleAssetList["tether"].Address });
+    BitcoinWallet bitcoinWallet1 = new(fungibleAssetList);
+    BitcoinWallet bitcoinWallet2 = new(fungibleAssetList);
+    BitcoinWallet bitcoinWallet3 = new(fungibleAssetList);
 
     allWallets.Add(bitcoinWallet1.Address, bitcoinWallet1);
     allWallets.Add(bitcoinWallet2.Address, bitcoinWallet2);

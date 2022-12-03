@@ -1,36 +1,21 @@
-﻿using CryptoWallet.Classes.Transactions;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Transactions;
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public class SolanaWallet : Wallet
+    public class SolanaWallet : NonFungibleAssetSupportedWallet
     {
-        public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
-
-        public SolanaWallet(List<Guid> allowedFungibleAssets) : base(allowedFungibleAssets)
+        private List<string> _additionalAllowedAssetNames = new()
         {
-            OwnedNonFungibleAssets = new Dictionary<Guid, string>();
-        }
+            "dogecoin", "cosmos"
+        };
 
-        public SolanaWallet(List<Guid> allowedFungibleAssets, Dictionary<Guid, string> ownedNonFungibleAssets) : base(allowedFungibleAssets)
+        public SolanaWallet(Dictionary<string, FungibleAsset> fungibleAssetList) : base(fungibleAssetList) 
         {
-            OwnedNonFungibleAssets = ownedNonFungibleAssets;
-        }
-
-        public bool CreateNewNonFungibleTransaction(Wallet receiverWallet, Guid assetAddress)
-        {
-            if (!OwnedNonFungibleAssets.ContainsKey(assetAddress))
+            foreach (var item in _additionalAllowedAssetNames)
             {
-                return false;
+                AssetBalance.Add(fungibleAssetList[item].Address, 5);
             }
-            if (!receiverWallet.AllowedAssets.Contains(assetAddress) || receiverWallet.OwnedNonFungibleAssets!.Contains(assetAddress))
-            {
-                return false;
-            }
-
-            NonFungibleAssetTransaction newTransaciton = new(assetAddress, this, receiverWallet);
-            TransactionHistory.Add(newTransaciton);
-            if (receiverWallet.AddNonFungibleAssetTransactionRecord(this, assetAddress, newTransaciton)) return true;
-            return false;
         }
     }
 }

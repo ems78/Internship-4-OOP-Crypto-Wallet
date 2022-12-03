@@ -1,36 +1,22 @@
-﻿using CryptoWallet.Classes.Transactions;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Transactions;
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public class EthereumWallet : Wallet
+    public class EthereumWallet : NonFungibleAssetSupportedWallet
     {
-        public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
+        private List<string> _additionalAllowedAssetNames = new()
+        {
+            "polygon", "bnb", "shibainu"
+        };
 
-        public EthereumWallet(List<Guid> allowedFungibleAssets) : base(allowedFungibleAssets)
+        public EthereumWallet(Dictionary<string, FungibleAsset> fungibleAssetList) : base(fungibleAssetList) 
+            
         {
-            OwnedNonFungibleAssets = new Dictionary<Guid, string>();
-        }
-
-        public EthereumWallet(List<Guid> allowedFungibleAssets, Dictionary<Guid, string> ownedNonFungibleAssets) : base(allowedFungibleAssets)
-        {
-            OwnedNonFungibleAssets = ownedNonFungibleAssets;
-        } 
-        
-        public bool CreateNewNonFungibleTransaction(Wallet receiverWallet, Guid assetAddress)
-        {
-            if (!OwnedNonFungibleAssets.ContainsKey(assetAddress))
+            foreach (var item in _additionalAllowedAssetNames)
             {
-                return false;
-            }
-            if (!receiverWallet.AllowedAssets.Contains(assetAddress) || receiverWallet.OwnedNonFungibleAssets!.Contains(assetAddress))
-            {
-                return false;
-            }
-
-            NonFungibleAssetTransaction newTransaciton = new(assetAddress, this, receiverWallet);
-            TransactionHistory.Add(newTransaciton);
-            if (receiverWallet.AddNonFungibleAssetTransactionRecord(this, assetAddress, newTransaciton)) return true;
-            return false;
+                AssetBalance.Add(fungibleAssetList[item].Address, 5);
+            }             
         }
     }
 }

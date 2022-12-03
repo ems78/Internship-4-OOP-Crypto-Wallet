@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CryptoWallet.Classes.Transactions;
+using System.Collections;
 using System.Transactions;
 
 namespace CryptoWallet.Classes.Wallets
@@ -15,19 +16,52 @@ namespace CryptoWallet.Classes.Wallets
 
         public ArrayList TransactionHistory { get; private set; }
 
-        public Wallet(Dictionary<Guid, double> assetBalance, List<Guid> allowedAssets)
+        public Wallet(List<Guid> allowedAssets)
         {
-            Address = new Guid();
-            AssetBalance = assetBalance;
+            Address = Guid.NewGuid();
+            AssetBalance = new Dictionary<Guid, double>();
             AllowedAssets = allowedAssets;
+            InitialiseAssetsBalance();
             TransactionHistory = new ArrayList();
-            OwnedNonFungibleAssets = null; // ?
         }
 
-        public void AddNewTransactionRecord(Transaction newTransaction)
+        private protected void InitialiseAssetsBalance()
         {
-            // -- 
+            foreach (var allowedAssetAddress in AllowedAssets)
+            {
+                AssetBalance.Add(allowedAssetAddress, 5);
+            }
+        }
+
+
+        public virtual bool CreateNewFungibleAssetTransactionRecord(Wallet receiverWallet, Guid assetAddress, double amount)
+        {
+            if (amount > AssetBalance[assetAddress])
+            {
+                return false;
+            }
+            if (!receiverWallet.AllowedAssets.Contains(assetAddress))
+            {
+                return false;
+            }
+
+            FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
             TransactionHistory.Add(newTransaction);
+            if (receiverWallet.AddTransactionRecord(this, assetAddress, newTransaction)) return true;
+            return false;
+        }
+
+
+        public bool AddTransactionRecord(Wallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
+        {
+            TransactionHistory.Add(newTransaction);
+            return true;
+        }
+
+        public bool AddNonFungibleAssetTransactionRecord(Wallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction)
+        {
+            TransactionHistory.Add(newTransaction);
+            return true;
         }
     }
 }

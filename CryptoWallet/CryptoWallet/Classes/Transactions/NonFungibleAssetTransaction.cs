@@ -1,9 +1,18 @@
-﻿namespace CryptoWallet.Classes.Transactions
+﻿using CryptoWallet.Classes.Wallets;
+
+namespace CryptoWallet.Classes.Transactions
 {
     public class NonFungibleAssetTransaction : Transaction
     {
-        public NonFungibleAssetTransaction(Guid assetAddress, DateTime dateOfTransaction, Guid senderAddress, Guid receiverAddress) : base(assetAddress, dateOfTransaction, senderAddress, receiverAddress)
+        public NonFungibleAssetTransaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet) : base(assetAddress, senderWallet, receiverWallet)
         {
+            TransferAsset(assetAddress, senderWallet, receiverWallet);
+        }
+
+        private void TransferAsset(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet)
+        {
+            senderWallet.OwnedNonFungibleAssets?.Remove(assetAddress);
+            receiverWallet.OwnedNonFungibleAssets?.Add(assetAddress);
         }
     }
 }

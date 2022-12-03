@@ -2,20 +2,20 @@
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public class EthereumWallet : Wallet
+    public class SolanaWallet : Wallet
     {
         public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
 
-        public EthereumWallet(List<Guid> allowedFungibleAssets) : base(allowedFungibleAssets)
+        public SolanaWallet(List<Guid> allowedFungibleAssets) : base(allowedFungibleAssets)
         {
             OwnedNonFungibleAssets = new Dictionary<Guid, string>();
         }
 
-        public EthereumWallet(List<Guid> allowedFungibleAssets, Dictionary<Guid, string> ownedNonFungibleAssets) : base(allowedFungibleAssets)
+        public SolanaWallet(List<Guid> allowedFungibleAssets, Dictionary<Guid, string> ownedNonFungibleAssets) : base(allowedFungibleAssets)
         {
             OwnedNonFungibleAssets = ownedNonFungibleAssets;
-        } 
-        
+        }
+
         public bool CreateNewNonFungibleTransaction(Wallet receiverWallet, Guid assetAddress)
         {
             if (!OwnedNonFungibleAssets.ContainsKey(assetAddress))

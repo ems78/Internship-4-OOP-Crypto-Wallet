@@ -9,7 +9,7 @@
 
         public Asset(string name)
         {
-            Address = new Guid();
+            Address = Guid.NewGuid();
             Name = name;
         }
     }

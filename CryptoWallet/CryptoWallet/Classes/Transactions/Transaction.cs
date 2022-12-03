@@ -16,11 +16,11 @@ namespace CryptoWallet.Classes.Transactions
 
         public bool IsRevoked { get; private set; }
 
-        public Transaction(Guid assetAddress, DateTime dateOfTransaction, Wallet senderWallet, Wallet receiverWallet)
+        public Transaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             AssetAddress = assetAddress;
-            DateOfTransaction = dateOfTransaction;
+            DateOfTransaction = DateTime.Now;
             SenderAddress = senderWallet.Address;
             ReceiverAddress = receiverWallet.Address;
         }
@@ -29,17 +29,15 @@ namespace CryptoWallet.Classes.Transactions
         {
             if (IsRevoked)
             {
-                // message?
                 return false;
             }
             else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
             {
-                // message
                 return false;
             }
 
-            senderWaller.OwnedNonFungibleAssets.Add(AssetAddress);
-            receiverWallet.OwnedNonFungibleAssets.Remove(ReceiverAddress);
+            senderWaller?.OwnedNonFungibleAssets?.Add(AssetAddress);
+            receiverWallet?.OwnedNonFungibleAssets?.Remove(ReceiverAddress);
             IsRevoked = true;
             return true;
         }

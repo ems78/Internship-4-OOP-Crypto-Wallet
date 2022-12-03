@@ -37,5 +37,11 @@ namespace CryptoWallet.Classes.Wallets
             if (receiverWallet.AddNonFungibleAssetTransactionRecord(this, assetAddress, newTransaciton)) return true;
             return false;
         }
+
+        public override double TotalValueInUSD()
+        {
+            // + non fungible asset value
+            return base.TotalValueInUSD();
+        }
     }
 }

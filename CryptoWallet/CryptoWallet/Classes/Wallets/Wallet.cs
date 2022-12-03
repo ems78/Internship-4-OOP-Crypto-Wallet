@@ -72,5 +72,18 @@ namespace CryptoWallet.Classes.Wallets
             TransactionHistory.Add(newTransaction);
             return true;
         }
+
+        public override string ToString() // enumerable
+        {
+            return $"--type-- wallet,\t{TotalValueInUSD()}USD,\t\t--value change---";
+        }
+
+        public virtual double TotalValueInUSD()
+        {
+            double totalAmount = 0;
+            // --
+
+            return totalAmount;
+        }
     }
 }

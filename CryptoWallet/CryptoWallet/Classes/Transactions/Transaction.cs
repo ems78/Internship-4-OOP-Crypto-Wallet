@@ -7,6 +7,8 @@ namespace CryptoWallet.Classes.Transactions
     {
         public Guid Id { get; }
 
+        public string TransactionType { get; set;  } // set? 
+
         public Guid AssetAddress { get; }
 
         public DateTime DateOfTransaction { get; }
@@ -24,6 +26,7 @@ namespace CryptoWallet.Classes.Transactions
             DateOfTransaction = DateTime.Now;
             SenderAddress = senderWallet.Address;
             ReceiverAddress = receiverWallet.Address;
+            TransactionType = "";
             //IsRevoked= false;
         }
 

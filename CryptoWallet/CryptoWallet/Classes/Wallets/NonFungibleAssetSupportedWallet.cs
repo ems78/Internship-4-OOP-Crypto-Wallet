@@ -36,7 +36,7 @@ namespace CryptoWallet.Classes.Wallets
             }
 
             NonFungibleAssetTransaction newTransaciton = new(assetAddress, this, receiverWallet);
-            TransactionHistory.Add(newTransaciton);
+            TransactionHistory.Add(newTransaciton.Id, newTransaciton);
             if (receiverWallet.AddNonFungibleAssetTransactionRecord(this, assetAddress, newTransaciton)) return true;
             return false;
         }

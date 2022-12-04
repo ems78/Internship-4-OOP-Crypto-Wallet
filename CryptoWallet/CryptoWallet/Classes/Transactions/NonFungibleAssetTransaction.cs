@@ -10,6 +10,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public NonFungibleAssetTransaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet) : base(assetAddress, senderWallet, receiverWallet)
         {
+            TransactionType = CryptoWallet.TransactionType.nonFungible.ToString();
             IsRevoked= false;
             TransferAsset(assetAddress, senderWallet, receiverWallet);
         }

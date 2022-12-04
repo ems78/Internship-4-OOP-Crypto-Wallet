@@ -22,6 +22,7 @@ namespace CryptoWallet.Classes.Transactions
             FinalSenderBalance = CalculateEndingBalance(true, StartingSenderBalance, transactionAmount);
             FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
             IsRevoked= false;
+            TransactionType = CryptoWallet.TransactionType.fungible.ToString();
         }
 
         private static double CalculateEndingBalance(bool isSender, double startingAmount, double transactionAmount)

@@ -16,4 +16,10 @@
         tether,
         // dodat ostale
     }
+
+    public enum TransactionType
+    {
+        fungible,
+        nonFungible
+    }
 }

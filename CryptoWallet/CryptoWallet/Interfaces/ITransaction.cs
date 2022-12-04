@@ -5,6 +5,7 @@ namespace CryptoWallet.Interfaces
     public interface ITransaction
     {
         Guid Id { get; }
+        string TransactionType { get; }
         Guid AssetAddress { get; }
         DateTime DateOfTransaction { get; }
         Guid SenderAddress { get; }

@@ -20,7 +20,6 @@ namespace CryptoWallet.Classes.Wallets
 
         public List<Guid> AllowedFungibleAssets { get; }
 
-        //public ArrayList TransactionHistory { get; private set; }
         public Dictionary<Guid, ITransaction> TransactionHistory { get; private set; }
 
         public Wallet()
@@ -29,7 +28,6 @@ namespace CryptoWallet.Classes.Wallets
             WalletType = "";
             AllowedFungibleAssets = new();
             AssetBalances = new();
-            //TransactionHistory = new ArrayList();
             TransactionHistory = new();
         }
 
@@ -45,7 +43,6 @@ namespace CryptoWallet.Classes.Wallets
             }
 
             FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
-            //TransactionHistory.Add(newTransaction);
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             if (receiverWallet.AddTransactionRecord(this, assetAddress, newTransaction)) return true;
             return false;
@@ -54,14 +51,12 @@ namespace CryptoWallet.Classes.Wallets
 
         public bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
         {
-            //TransactionHistory.Add(newTransaction);
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             return true;
         }
 
         public bool AddNonFungibleAssetTransactionRecord(IWallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction)
         {
-            //TransactionHistory.Add(newTransaction);
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             return true;
         }

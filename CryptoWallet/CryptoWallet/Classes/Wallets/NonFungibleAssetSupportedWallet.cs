@@ -6,18 +6,20 @@ namespace CryptoWallet.Classes.Wallets
     public class NonFungibleAssetSupportedWallet : Wallet
     {
         public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
+        public Dictionary<Guid, string> AllowedNonFungibleAssets { get; private set; }
 
-        private List<string> _allowedAssetNames = new()
+        public List<string> AllowedAssetNames = new()
         {
             "ethereum", "bitcoin", "solana", "xrp",  "tether"
         };
 
         public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
-            foreach (var item in _allowedAssetNames)
+            foreach (var item in AllowedAssetNames)
             {
-                AssetBalance.Add(fungibleAssetList[item].Address, 5);
+                AssetBalances.Add(fungibleAssetList[item].Address, 5);
             }
+            // allowed nfa addresses
             OwnedNonFungibleAssets = new Dictionary<Guid, string>();
         }
 
@@ -27,7 +29,7 @@ namespace CryptoWallet.Classes.Wallets
             {
                 return false;
             }
-            if (!receiverWallet.AllowedAssets.Contains(assetAddress) || receiverWallet.OwnedNonFungibleAssets!.Contains(assetAddress))
+            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress) || receiverWallet.OwnedNonFungibleAssets!.Contains(assetAddress))
             {
                 return false;
             }

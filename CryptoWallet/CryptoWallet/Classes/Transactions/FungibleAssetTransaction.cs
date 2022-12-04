@@ -14,8 +14,8 @@ namespace CryptoWallet.Classes.Transactions
 
         public FungibleAssetTransaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet, double transactionAmount) : base(assetAddress, senderWallet, receiverWallet)
         {
-            StartingSenderBalance = senderWallet.AssetBalance[assetAddress];
-            StartingReceiverBalance = receiverWallet.AssetBalance[assetAddress];
+            StartingSenderBalance = senderWallet.AssetBalances[assetAddress];
+            StartingReceiverBalance = receiverWallet.AssetBalances[assetAddress];
             FinalSenderBalance = CalculateEndingBalance(true, StartingSenderBalance, transactionAmount);
             FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
         }
@@ -36,8 +36,8 @@ namespace CryptoWallet.Classes.Transactions
                 return false;
             }
 
-            senderWallet.AssetBalance[AssetAddress] = StartingSenderBalance;
-            receiverWallet.AssetBalance[AssetAddress] = StartingReceiverBalance;
+            senderWallet.AssetBalances[AssetAddress] = StartingSenderBalance;
+            receiverWallet.AssetBalances[AssetAddress] = StartingReceiverBalance;
             return true;
         }
     }

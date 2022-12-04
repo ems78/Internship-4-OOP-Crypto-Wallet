@@ -1,39 +1,40 @@
 ﻿using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Transactions;
+using CryptoWallet.Interfaces;
 using System.Collections;
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public abstract class Wallet
+    public abstract class Wallet : IWallet
     {
         public Guid Address { get; }
 
-        public Dictionary<Guid, double> AssetBalance { get; private set; }
+        public Dictionary<Guid, double> AssetBalances { get; private set; }
 
         public List<Guid>? OwnedNonFungibleAssets { get; private set; }
 
-        private List<string> _allowedAssetNames = new();
+        //public List<string> AllowedFungibleAssetNames { get; private set; }
 
-        public List<Guid> AllowedAssets { get; }
+        public List<Guid> AllowedFungibleAssets { get; }
 
         public ArrayList TransactionHistory { get; private set; }
 
         public Wallet()
         {
             Address = Guid.NewGuid();
-            AllowedAssets = new();
-            AssetBalance = new();
+            AllowedFungibleAssets = new();
+            AssetBalances = new();
             TransactionHistory = new ArrayList();
         }
 
 
         public virtual bool CreateNewFungibleAssetTransactionRecord(Wallet receiverWallet, Guid assetAddress, double amount)
         {
-            if (amount > AssetBalance[assetAddress])
+            if (amount > AssetBalances[assetAddress])
             {
                 return false;
             }
-            if (!receiverWallet.AllowedAssets.Contains(assetAddress))
+            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress))
             {
                 return false;
             }
@@ -67,7 +68,7 @@ namespace CryptoWallet.Classes.Wallets
         public virtual double FungibleAssetsTotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
             double totalAmount = 0;
-            foreach (var item in AssetBalance)
+            foreach (var item in AssetBalances)
             {
                 if (item.Value is 0)
                 {

@@ -13,7 +13,7 @@ namespace CryptoWallet.Classes.Wallets
         {
             foreach (var item in _allowedAssetNames)
             {
-                AssetBalance.Add(fungibleAssetList[item].Address, 5);
+                AssetBalances.Add(fungibleAssetList[item].Address, 5);
             }
         }
     }

@@ -1,8 +1,9 @@
 ﻿using CryptoWallet.Classes.Wallets;
+using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
 {
-    public abstract class Transaction
+    public abstract class Transaction : ITransaction
     {
         public Guid Id { get; }
 
@@ -23,6 +24,7 @@ namespace CryptoWallet.Classes.Transactions
             DateOfTransaction = DateTime.Now;
             SenderAddress = senderWallet.Address;
             ReceiverAddress = receiverWallet.Address;
+            IsRevoked= false;
         }
 
         public virtual bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet)

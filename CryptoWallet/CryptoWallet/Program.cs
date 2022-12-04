@@ -169,7 +169,7 @@ static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddres
 
     Console.WriteLine($"Wallet address: {wallet!.Address}\n");
 
-    foreach (var assetBalance in wallet.AssetBalance)
+    foreach (var assetBalance in wallet.AssetBalances)
     {
         if (assetBalance.Value is 0)
         {

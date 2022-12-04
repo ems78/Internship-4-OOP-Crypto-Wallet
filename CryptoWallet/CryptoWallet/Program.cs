@@ -37,7 +37,6 @@ static void ResultOfAction(string message)
 
 static void PrintMenuOptions(Dictionary<string, List<string>> menuOptions, string menuToPrint)
 {
-    //Console.Clear();
     int i = 0;
     foreach (var item in menuOptions[menuToPrint])
     {
@@ -58,7 +57,7 @@ static void MainMenu(Dictionary<string, List<string>> menuOptions, Dictionary<st
         {
             case 1: // create wallet
                 Console.Clear();
-                CreateWalletSubmenu(menuOptions, fungibleAssetList, allWallets);
+                CreateWalletSubmenu(menuOptions, fungibleAssetList, nonFungibleAssetList, allWallets);
                 break;
 
             case 2: // access wallet
@@ -77,7 +76,7 @@ static void MainMenu(Dictionary<string, List<string>> menuOptions, Dictionary<st
 }
 
 
-static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, IWallet> allWallets)
+static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, Dictionary<string, IWallet> allWallets)
 {
     while (true)
     {
@@ -92,25 +91,22 @@ static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Di
                     BitcoinWallet newWallet = new(fungibleAssetList);
                     allWallets.Add(newWallet.Address.ToString(), newWallet);
                 }
-                // press any key...
                 return;
 
             case 2: // create ethereum wallet
                 if (UserConfirmation("create a new ethereum wallet?"))
                 {
-                    EthereumWallet newWallet = new(fungibleAssetList);
+                    EthereumWallet newWallet = new(fungibleAssetList, nonFungibleAssetList);
                     allWallets.Add(newWallet.Address.ToString(), newWallet);
                 }
-                // press any key...
                 return;
 
             case 3: // create solana wallet
                 if (UserConfirmation("create a new solana wallet?"))
                 {
-                    SolanaWallet newWallet = new(fungibleAssetList);
+                    SolanaWallet newWallet = new(fungibleAssetList, nonFungibleAssetList);
                     allWallets.Add(newWallet.Address.ToString(), newWallet);
                 }
-                // press any key...
                 return;
 
             case 4:
@@ -149,7 +145,7 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 
         switch (UserInput("a number to navigate the menu"))
         {
-            case 1:  // portfolio **********************************************************
+            case 1:  // portfolio 
                 Portfolio(allWallets, walletAddress!, fungibleAssetList, nonFungibleAssetList);
                 return;
 
@@ -173,15 +169,14 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 
 static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
-    // ispisat adresu ime asseta i oznaku (fa), vrijednost, ukupna vrijednost u usd
     Console.Clear();
 
     allWallets.TryGetValue(walletAddress, out IWallet? wallet);
 
+    // neradi metoda za izracunavanje ukupne vrijednosti 
     Dictionary<string, double> valueChanges = Class1.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
         
-    Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD} \nBalances:\n");
-
+    Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD} \n\nBalances:");
 
     foreach (var assetBalance in wallet.AssetBalances)
     {
@@ -200,7 +195,7 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
 
     if (allWallets[walletAddress].WalletType is not "bitcoin")
     {
-
+        // vrijednost NFA u USD
     }
 
     ResultOfAction("Success");
@@ -224,12 +219,17 @@ static string AddressInput(Dictionary<string, IWallet> allWallets, Dictionary<st
                 }
             }
 
-        case "fungibleAsset":
-            // ---
-
-
-        case "nonFungibleAsset":
-        // ---
+        case "asset":
+            while (true)
+            {
+                string? assetAddressString = Console.ReadLine(); // ode zapne i neide dalje
+                
+                Console.WriteLine(Class1.assetNames.ContainsKey(Guid.Parse(assetAddressString!)));
+                if (Class1.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || Class1.NFassetNames.ContainsKey(Guid.Parse(assetAddressString!))) // fungibleAssetList.ContainsKey(assetAddressString!) || nonFungibleAssetList.ContainsKey(assetAddressString!))
+                {
+                    return assetAddressString!;
+                }
+            }
 
         default:
             return "";
@@ -241,26 +241,25 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
 {
     Console.Clear();
 
-    string receiverWalletAddress = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "to receieve the transfer");
+    string receiverWalletAddress = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet");
     string? assetAddressString;
     Guid assetAddress;
     Random r = new();
 
     while (true)
     {
-        Console.Write("\nEnter the address of an asset you want to transfer: ");
-        assetAddressString = Console.ReadLine(); // ode zapne i neide dalje
-        if (!fungibleAssetList.ContainsKey(assetAddressString!) && !nonFungibleAssetList.ContainsKey(assetAddressString!))
-        {
-            continue;
-        }
+        assetAddressString = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer");
 
-        Guid.TryParse(assetAddressString, out assetAddress);
+        assetAddress = Guid.Parse(assetAddressString);
 
-        if (!fungibleAssetList.ContainsKey(assetAddressString!))
+        if (allWallets[SenderWalletAddress].WalletType is "bitcoin")
         {
             break;
         }
+
+        bool fungible = Class1.assetNames.ContainsKey(assetAddress);
+        // popravit transakcije
+
 
         if (allWallets[SenderWalletAddress].WalletType is "ethereum")
         {
@@ -273,7 +272,6 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
         wallet1.CreateNewNonFungibleTransaction(allWallets[receiverWalletAddress], assetAddress);
         ResultOfAction("Success");
         return;
-
     }
 
     double amount;
@@ -287,29 +285,30 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
         }
     }
 
+    // nesto se sjebe ode
     if (allWallets[SenderWalletAddress].CreateNewFungibleAssetTransactionRecord(allWallets[receiverWalletAddress], assetAddress, amount))
     {
         double percentage = Class1.NextDouble(r, -0.5, 0.5);
         fungibleAssetList[assetAddress.ToString()].Value += fungibleAssetList[assetAddress.ToString()].Value * percentage;
-        ResultOfAction();
+        ResultOfAction("Success");
     }
+    ResultOfAction("Transaction Failed.");
 }
 
 static void TransactionHistory(Dictionary<string, IWallet> allWallets, string walletAddress)
-{
+{ // ne spremaju se transakcije
     Console.Clear();
     foreach (var transaction in allWallets[walletAddress].TransactionHistory)
     {
         Console.WriteLine($"{transaction}\n");
     }
 
-    Console.WriteLine("1 - Revoke a transaction\n");
+    Console.WriteLine("1 - Revoke a transaction\n2 - Return to main menu");
 
-    if (UserInput("a number to navigate the menu") is not 1)
+    if (UserInput("a number to navigate the menu") is  2)
     {
         return;
     }
-
     
     string? transactionID;
     while (true)
@@ -334,11 +333,10 @@ static void TransactionHistory(Dictionary<string, IWallet> allWallets, string wa
             
             if (!t.RevokeTransaction((Wallet)sender, (Wallet)receiver))
             {
-                Console.WriteLine("Revoking failed.");
-                ResultOfAction(); // preoblikovat funkciju
+                ResultOfAction("Revoking failed"); 
                 return;
             }
-            ResultOfAction();
+            ResultOfAction("Success");
             return;
         }
 
@@ -348,10 +346,10 @@ static void TransactionHistory(Dictionary<string, IWallet> allWallets, string wa
 
         if (!t1.RevokeTransaction(sender1, receiver1))
         {
-            Console.WriteLine("Revoking failed.");
+            ResultOfAction("Revoking failed");
             return;
         }
-        ResultOfAction();
+        ResultOfAction("Success");
         return;
     }
 }
@@ -378,31 +376,49 @@ static void SeedData(Dictionary<string, IWallet> allWallets, Dictionary<string, 
     BitcoinWallet bitcoinWallet1 = new(fungibleAssetList);
     BitcoinWallet bitcoinWallet2 = new(fungibleAssetList);
     BitcoinWallet bitcoinWallet3 = new(fungibleAssetList);
+    EthereumWallet ethereumWallet1 = new(fungibleAssetList, nonFungibleAssetList);
+    EthereumWallet ethereumWallet2 = new(fungibleAssetList, nonFungibleAssetList);
+    EthereumWallet ethereumWallet3 = new(fungibleAssetList, nonFungibleAssetList);
+    SolanaWallet solanaWallet1 = new(fungibleAssetList, nonFungibleAssetList);
+    SolanaWallet solanaWallet2 = new(fungibleAssetList, nonFungibleAssetList);
+    SolanaWallet solanaWallet3 = new(fungibleAssetList, nonFungibleAssetList);
+
 
     allWallets.Add(bitcoinWallet1.Address.ToString(), bitcoinWallet1);
     allWallets.Add(bitcoinWallet2.Address.ToString(), bitcoinWallet2);
     allWallets.Add(bitcoinWallet3.Address.ToString(), bitcoinWallet3);
+    allWallets.Add(ethereumWallet1.Address.ToString(), ethereumWallet2);
+    allWallets.Add(ethereumWallet2.Address.ToString(), ethereumWallet2);
+    allWallets.Add(ethereumWallet3.Address.ToString(), ethereumWallet3);
+    allWallets.Add(solanaWallet1.Address.ToString(), solanaWallet1);
+    allWallets.Add(solanaWallet2.Address.ToString(), solanaWallet2);
+    allWallets.Add(solanaWallet3.Address.ToString(), solanaWallet3);
 
-    nonFungibleAssetList.Add("Moonbirds#1748", new NonFungibleAsset("Moonbirds#1748", 8.74, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Moonbirds #1748", new NonFungibleAsset("Moonbirds #1748", 8.74, fungibleAssetList["ethereum"].Address, "ethereum"));
     nonFungibleAssetList.Add("TerraformsLevel13", new NonFungibleAsset("TerraformsLevel13", 0.48, fungibleAssetList["ethereum"].Address, "ethereum"));
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
-    //nonFungibleAssetList.Add();
+    nonFungibleAssetList.Add("Based Ghoul #5229", new NonFungibleAsset("Based Ghoul #5229", 0.12, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Character #2716", new NonFungibleAsset("Character #2716", 7.6, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Character #4241", new NonFungibleAsset("Character #4241", 5.1, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Character #586", new NonFungibleAsset("Character #586", 2.2, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Character #2671", new NonFungibleAsset("Character #2671", 0.55, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Where is Nyan ?", new NonFungibleAsset("Where is Nyan ?", 1.09, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("Celestial Reflections", new NonFungibleAsset("Celestial Reflections", 2.0, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("That Friday Night", new NonFungibleAsset("That Friday Night", 2.7, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #228", new NonFungibleAsset("PokePxls #228", 0.01, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #147", new NonFungibleAsset("PokePxls #147", 0.02, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #135", new NonFungibleAsset("PokePxls #135", 0.03, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #38", new NonFungibleAsset("PokePxls #38", 0.05, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #150", new NonFungibleAsset("PokePxls #150", 0.06, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #104", new NonFungibleAsset("PokePxls #104", 0.03, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("PokePxls #197GOLD", new NonFungibleAsset("PokePxls #197GOLD", 0.5, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("X471", new NonFungibleAsset("X471", 322.19, fungibleAssetList["bitcoin"].Address, "bitcoin"));
+    nonFungibleAssetList.Add("Hero Chest", new NonFungibleAsset("Hero Chest", 0.03, fungibleAssetList["bitcoin"].Address, "bitcoin"));
+    nonFungibleAssetList.Add("Enjin", new NonFungibleAsset("Enjin", 36.46, fungibleAssetList["solana"].Address, "solana"));
+
+    foreach (var asset in nonFungibleAssetList)
+    {
+        Class1.NFassetNames.Add(asset.Value.Address, asset.Key);
+    }
 }
 
 

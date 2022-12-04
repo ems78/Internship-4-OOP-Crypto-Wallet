@@ -5,7 +5,7 @@ namespace CryptoWallet.Classes.Wallets
 {
     public class SolanaWallet : NonFungibleAssetSupportedWallet
     {
-        public SolanaWallet(Dictionary<string, FungibleAsset> fungibleAssetList) : base(fungibleAssetList) 
+        public SolanaWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList) : base(fungibleAssetList, nonFungibleAssetList) 
         {
             WalletType = CryptoWallet.WalletType.solana.ToString();        
         }

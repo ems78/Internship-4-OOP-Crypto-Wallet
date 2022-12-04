@@ -7,7 +7,7 @@ namespace CryptoWallet.Classes.Wallets
 
         private readonly List<string> _allowedAssetNames = new()
         {
-            "bitcoin", "ethereum", "solana", "xrp", "dogecoin", "polygon", "tether", "shibainu", "cosmos"
+            "ethereum", "bitcoin", "solana", "xrp",  "tether", "dogecoin", "polygon", "shibainu", "bnb", "cosmos"
         };
 
         public BitcoinWallet(Dictionary<string, FungibleAsset> fungibleAssetList) 

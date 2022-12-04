@@ -11,16 +11,21 @@ namespace CryptoWallet.Classes.Wallets
 
         public List<string> AllowedAssetNames = new()
         {
-            "ethereum", "bitcoin", "solana", "xrp",  "tether"  // enum?
+            "ethereum", "bitcoin", "solana", "xrp",  "tether", "dogecoin", "polygon", "shibainu", "bnb", "cosmos"  // enum?
         };
 
-        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList)
+        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             foreach (var item in AllowedAssetNames)
             {
                 AssetBalances.Add(fungibleAssetList[item].Address, 5);
             }
-            // allowed nfa addresses
+
+            AllowedNonFungibleAssets = new();
+            foreach (var item in nonFungibleAssetList)
+            {
+                AllowedNonFungibleAssets.Add(item.Value.Address, item.Value.Name);
+            }
             OwnedNonFungibleAssets = new Dictionary<Guid, string>();
         }
 

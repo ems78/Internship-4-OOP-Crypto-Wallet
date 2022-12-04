@@ -6,6 +6,8 @@ namespace CryptoWallet.Classes
     {
         public static Dictionary<Guid, string> assetNames = new() { };
 
+        public static Dictionary<Guid, string> NFassetNames = new() { };
+
         public static double NextDouble(this Random RandGenerator, double MinValue, double MaxValue)
         {
             double result = RandGenerator.NextDouble() * (MaxValue - MinValue) + MinValue;

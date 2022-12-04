@@ -1,7 +1,6 @@
 ﻿using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Transactions;
 using System.Collections;
-using System.Transactions;
 
 namespace CryptoWallet.Classes.Wallets
 {
@@ -13,7 +12,7 @@ namespace CryptoWallet.Classes.Wallets
 
         public List<Guid>? OwnedNonFungibleAssets { get; private set; }
 
-        private List<string> _allowedAssetNames = new List<string>();
+        private List<string> _allowedAssetNames = new();
 
         public List<Guid> AllowedAssets { get; }
 
@@ -23,24 +22,9 @@ namespace CryptoWallet.Classes.Wallets
         {
             Address = Guid.NewGuid();
             AllowedAssets = new();
-            AssetBalance = new();/*
-            foreach (var item in _allowedAssetNames!)
-            {
-                AllowedAssets!.Add(fungibleAssetList[item].Address);
-                AssetBalance.Add(fungibleAssetList[item].Address, 5);
-            }*/
-            //InitialiseAssetsBalance();
+            AssetBalance = new();
             TransactionHistory = new ArrayList();
         }
-
-        /*
-        private protected void InitialiseAssetsBalance()
-        {
-            foreach (var allowedAssetAddress in AllowedAssets)
-            {
-                AssetBalance.Add(allowedAssetAddress, 5);
-            }
-        }*/
 
 
         public virtual bool CreateNewFungibleAssetTransactionRecord(Wallet receiverWallet, Guid assetAddress, double amount)
@@ -75,13 +59,22 @@ namespace CryptoWallet.Classes.Wallets
 
         public override string ToString() // enumerable
         {
-            return $"--type-- wallet,\t{TotalValueInUSD()}USD,\t\t--value change---";
+            return $"--type-- wallet,\t\t--value change---";  // printanje usd vrijednosti
         }
 
-        public virtual double TotalValueInUSD()
+
+
+        public virtual double FungibleAssetsTotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
             double totalAmount = 0;
-            // --
+            foreach (var item in AssetBalance)
+            {
+                if (item.Value is 0)
+                {
+                    continue;
+                }
+                totalAmount += item.Value * fungibleAssetList[item.Key.ToString()].GetValueInUSD();
+            }
 
             return totalAmount;
         }

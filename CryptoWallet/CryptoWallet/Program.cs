@@ -1,6 +1,8 @@
-﻿using CryptoWallet.Classes.Assets;
+﻿using CryptoWallet.Classes;
+using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Wallets;
 using System.Collections;
+
 
 static int UserInput(string typeOfInput)
 {
@@ -36,7 +38,7 @@ static void PrintMenuOptions(Dictionary<string, List<string>> menuOptions, strin
 }
 
 
-static void MainMenu(Dictionary<string, List<string>> menuOptions, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, Wallet> allWallets)
+static void MainMenu(Dictionary<string, List<string>> menuOptions, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, Dictionary<string, Wallet> allWallets)
 {
     while (true)
     {
@@ -50,7 +52,7 @@ static void MainMenu(Dictionary<string, List<string>> menuOptions, Dictionary<st
                 break;
 
             case 2: // access wallet
-                AccessWallet(menuOptions, allWallets);
+                AccessWallet(menuOptions, allWallets, fungibleAssetList, nonFungibleAssetList);
                 break;
 
             case 3:
@@ -110,7 +112,7 @@ static void CreateWalletSubmenu(Dictionary<string, List<string>> menuOptions, Di
 }
 
 
-static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionary<string, Wallet> allWallets)
+static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionary<string, Wallet> allWallets, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
     while (true)
     {
@@ -124,7 +126,8 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 
         Console.Write("\nEnter the address of a wallet you want to access: ");
         string? walletAddress = Console.ReadLine();
-        if (!menuOptions.ContainsKey(walletAddress!))
+
+        if (!allWallets.ContainsKey(walletAddress!))
         {
             continue;
         }
@@ -133,12 +136,12 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 
         switch (UserInput("a number to navigate the menu"))
         {
-            case 1:  // portfolio
-                Portfolio(allWallets, walletAddress!);
+            case 1:  // portfolio **********************************************************
+                Portfolio(allWallets, walletAddress!, fungibleAssetList, nonFungibleAssetList);
                 break;
 
             case 2:  // transfer  
-
+                Transfer(allWallets, walletAddress!, fungibleAssetList, nonFungibleAssetList);
                 break;
 
             case 3:  //  transaction history
@@ -154,14 +157,105 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
     }
 }
 
-static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddress)
+
+static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
+    // ispisat adresu ime asseta i oznaku (fa), vrijednost, ukupna vrijednost u usd, postotak promjene
+    Console.Clear();
+
+    allWallets.TryGetValue(walletAddress, out Wallet? wallet);
+    Dictionary<string, double> valueChanges = Class1.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
+        
+
+    Console.WriteLine($"Wallet address: {wallet!.Address}\n");
+
+    foreach (var assetBalance in wallet.AssetBalance)
+    {
+        if (assetBalance.Value is 0)
+        {
+            continue;
+        }
+        string assetAddress = assetBalance.Key.ToString();
+        //Console.WriteLine($"{fungibleAssetList[assetAddress].Name} [{fungibleAssetList[assetAddress].Abbreviation}] - {assetBalance.Value}");
+        // key not found --
+
+    }
+
+    Console.ReadKey();    
+}
+
+
+static string AddressInput(Dictionary<string, Wallet> allWallets, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, string typeOfAddress, string message)
+{
+    Console.Write($"\nEnter the address of {message}: ");
+    switch (typeOfAddress)
+    {
+        case "wallet":
+            while (true)
+            {
+                string? walletAddress = Console.ReadLine();
+
+                if (allWallets.ContainsKey(walletAddress!))
+                {
+                    return walletAddress!;
+                }
+            }
+
+        case "fungibleAsset":
+            // ---
+
+
+        case "nonFungibleAsset":
+            // ---
+
+
+        default:
+            return "";
+    }
+}
+
+
+static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
+{
+    Console.Clear();
+
+    string receiverWalletAddress = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "to receieve the transfer");
+    string? assetAddressString;
+    Guid assetAddress;
+
     while (true)
     {
-        Console.Clear();
-        Console.WriteLine($"Wallet address: {walletAddress}");
+        Console.Write("\nEnter the address of an asset you want to transfer: ");
+        assetAddressString = Console.ReadLine();
 
-        
+        if (fungibleAssetList.ContainsKey(assetAddressString!))
+        {
+            Guid.TryParse(assetAddressString, out assetAddress);
+            break;
+        }
+        else if (!nonFungibleAssetList.ContainsKey(assetAddressString!))
+        {
+            continue;
+        }
+
+        // NonFungibleAssetTransaction nemogu doc do nje priko allWallets
+    }
+
+    double amount;
+    while (true)
+    {
+        Console.Write("\nEnter the amount you want to transfer: ");
+
+        if (double.TryParse(Console.ReadLine(), out amount))
+        {
+            break;
+        }
+    }
+
+    if (allWallets[SenderWalletAddress].CreateNewFungibleAssetTransactionRecord(allWallets[receiverWalletAddress], assetAddress, amount))
+    {
+        Console.WriteLine("Succesfull\nPress any key to continue.");
+        Console.ReadKey();
     }
 }
 
@@ -187,8 +281,8 @@ static void SeedData(Dictionary<string, Wallet> allWallets, Dictionary<string, F
     allWallets.Add(bitcoinWallet2.Address.ToString(), bitcoinWallet2);
     allWallets.Add(bitcoinWallet3.Address.ToString(), bitcoinWallet3);
 
-    nonFungibleAssetList.Add("Moonbirds#1748", new NonFungibleAsset("Moonbirds#1748", 8.74, fungibleAssetList["ethereum"].Address));
-    nonFungibleAssetList.Add("TerraformsLevel13", new NonFungibleAsset("TerraformsLevel13", 0.48, fungibleAssetList["ethereum"].Address));
+    nonFungibleAssetList.Add("Moonbirds#1748", new NonFungibleAsset("Moonbirds#1748", 8.74, fungibleAssetList["ethereum"].Address, "ethereum"));
+    nonFungibleAssetList.Add("TerraformsLevel13", new NonFungibleAsset("TerraformsLevel13", 0.48, fungibleAssetList["ethereum"].Address, "ethereum"));
     //nonFungibleAssetList.Add();
     //nonFungibleAssetList.Add();
     //nonFungibleAssetList.Add();
@@ -209,18 +303,17 @@ static void SeedData(Dictionary<string, Wallet> allWallets, Dictionary<string, F
     //nonFungibleAssetList.Add();
 }
 
-
-Dictionary<string, List<string>> menuOptions = new Dictionary<string, List<string>>()
+Dictionary<string, List<string>> menuOptions = new()
             {
                 {"main menu", new List<string>(){ "Create wallet", "Access wallet", "Exit application"} },
                 {"create wallet submenu", new List<string>() { "Bitcoin wallet", "Ethereum wallet", "Solana wallet", "Return to main menu"} },
                 {"access wallet submenu", new List<string>() { "Portfolio", "Transfer", "Transaction history", "Return to main menu" } }
             };
 
-Dictionary<string, Wallet> allWallets = new Dictionary<string, Wallet>(); 
+Dictionary<string, Wallet> allWallets = new(); 
 
-Dictionary<string, FungibleAsset> fungibleAssetList = new Dictionary<string, FungibleAsset>();
-Dictionary<string, NonFungibleAsset> nonFungibleAssetList = new Dictionary<string, NonFungibleAsset>();
+Dictionary<string, FungibleAsset> fungibleAssetList = new();
+Dictionary<string, NonFungibleAsset> nonFungibleAssetList = new();
 
 SeedData(allWallets, fungibleAssetList, nonFungibleAssetList);
-MainMenu(menuOptions, fungibleAssetList, allWallets);
+MainMenu(menuOptions, fungibleAssetList, nonFungibleAssetList, allWallets);

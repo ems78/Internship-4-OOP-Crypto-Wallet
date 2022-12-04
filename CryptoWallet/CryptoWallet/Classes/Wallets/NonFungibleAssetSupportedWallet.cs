@@ -38,10 +38,11 @@ namespace CryptoWallet.Classes.Wallets
             return false;
         }
 
+        /*
         public override double TotalValueInUSD()
         {
             // + non fungible asset value
             return base.TotalValueInUSD();
-        }
+        }*/
     }
 }

@@ -4,10 +4,7 @@ namespace CryptoWallet.Classes
 {
     public static class Class1
     {
-        public static Dictionary<Guid, string> assetNames = new()
-        {
-
-        };
+        public static Dictionary<Guid, string> assetNames = new() { };
 
         public static double NextDouble(this Random RandGenerator, double MinValue, double MaxValue)
         {

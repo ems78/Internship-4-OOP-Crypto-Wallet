@@ -12,7 +12,8 @@ namespace CryptoWallet.Interfaces
         Dictionary<Guid, double> AssetBalances { get; }
         List<Guid>? OwnedNonFungibleAssets { get;}   // ovo nebi smilo bit ode ***
         List<Guid> AllowedFungibleAssets { get; }
-        ArrayList TransactionHistory { get; }
+        //ArrayList TransactionHistory { get; }
+        Dictionary<Guid, ITransaction> TransactionHistory { get; }
         bool CreateNewFungibleAssetTransactionRecord(IWallet receiverWallet, Guid assetAddress, double amount);
         bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction);
         bool AddNonFungibleAssetTransactionRecord(IWallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction);

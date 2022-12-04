@@ -31,22 +31,5 @@ namespace CryptoWallet.Classes.Transactions
         {
             return $"{Id}\t{DateOfTransaction}\t{SenderAddress}\t{ReceiverAddress}--kolicina--\t--ime asseta--\t--IsRevoked";
         }
-        /*
-        public virtual bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet)
-        {
-            if (IsRevoked)
-            {
-                return false;
-            }
-            else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
-            {
-                return false;
-            }
-
-            senderWaller?.OwnedNonFungibleAssets?.Add(AssetAddress);
-            receiverWallet?.OwnedNonFungibleAssets?.Remove(ReceiverAddress);
-            IsRevoked = true;
-            return true;
-        }*/
     }
 }

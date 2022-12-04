@@ -1,5 +1,6 @@
 ﻿using CryptoWallet.Classes;
 using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Transactions;
 using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 using System.Collections;
@@ -27,9 +28,9 @@ static bool UserConfirmation(string typeOfConfirmation)
 }
 
 
-static void SuccessfulAction()
+static void ResultOfAction(string message)
 {
-    Console.WriteLine("\nSuccesfull.\nPress any key to continue.");
+    Console.WriteLine($"\n{message}.\nPress any key to continue.");
     Console.ReadKey();
 }
 
@@ -202,7 +203,7 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
 
     }
 
-    SuccessfulAction();
+    ResultOfAction("Success");
     return;
 }
 
@@ -265,12 +266,12 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
         {
             EthereumWallet wallet = (EthereumWallet)allWallets[SenderWalletAddress];
             wallet.CreateNewNonFungibleTransaction(allWallets[receiverWalletAddress], assetAddress);
-            SuccessfulAction();
+            ResultOfAction("Success");
             return;
         }
         SolanaWallet wallet1 = (SolanaWallet)allWallets[SenderWalletAddress];
         wallet1.CreateNewNonFungibleTransaction(allWallets[receiverWalletAddress], assetAddress);
-        SuccessfulAction();
+        ResultOfAction("Success");
         return;
 
     }
@@ -290,7 +291,7 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
     {
         double percentage = Class1.NextDouble(r, -0.5, 0.5);
         fungibleAssetList[assetAddress.ToString()].Value += fungibleAssetList[assetAddress.ToString()].Value * percentage;
-        SuccessfulAction();
+        ResultOfAction();
     }
 }
 
@@ -309,16 +310,50 @@ static void TransactionHistory(Dictionary<string, IWallet> allWallets, string wa
         return;
     }
 
-    Console.Write("\nEnter the ID of the transaction you want to revoke: ");
+    
     string? transactionID;
     while (true)
-    {   
+    {
+        Console.Write("\nEnter the ID of the transaction you want to revoke: ");
         transactionID = Console.ReadLine();
-        // provjerit jel postoji --> prominit tip strukture u klasi i interfaceu
+        if (!Guid.TryParse(transactionID, out Guid transactionIDGuid))
+        {
+            continue;
+        }
+        if (!allWallets[walletAddress].TransactionHistory.ContainsKey(transactionIDGuid))
+        {
+            continue;
+        }
 
-        // --
+        ITransaction transaction = allWallets[walletAddress].TransactionHistory[transactionIDGuid];
+        if (transaction.TransactionType == "fungible")
+        {
+            FungibleAssetTransaction t = (FungibleAssetTransaction)transaction;
+            IWallet sender = allWallets[t.SenderAddress.ToString()];
+            IWallet receiver = allWallets[t.ReceiverAddress.ToString()];
+            
+            if (!t.RevokeTransaction((Wallet)sender, (Wallet)receiver))
+            {
+                Console.WriteLine("Revoking failed.");
+                ResultOfAction(); // preoblikovat funkciju
+                return;
+            }
+            ResultOfAction();
+            return;
+        }
+
+        NonFungibleAssetTransaction t1 = (NonFungibleAssetTransaction)transaction;
+        IWallet sender1 = allWallets[t1.SenderAddress.ToString()];
+        IWallet receiver1 = allWallets[t1.ReceiverAddress.ToString()];
+
+        if (!t1.RevokeTransaction(sender1, receiver1))
+        {
+            Console.WriteLine("Revoking failed.");
+            return;
+        }
+        ResultOfAction();
+        return;
     }
-
 }
 
 

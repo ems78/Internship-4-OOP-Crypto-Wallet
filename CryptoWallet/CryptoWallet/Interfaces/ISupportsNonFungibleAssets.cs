@@ -6,6 +6,6 @@ namespace CryptoWallet.Interfaces
     {
         new Dictionary<Guid, string> OwnedNonFungibleAssets { get; }
         Dictionary<Guid, string> AllowedNonFungibleAssets { get; }
-        bool CreateNewNonFungibleTransaction(Wallet receiverWallet, Guid assetAddress);
+        bool CreateNewNonFungibleTransaction(IWallet receiverWallet, Guid assetAddress);
     }
 }

@@ -2,12 +2,15 @@
 using CryptoWallet.Classes.Transactions;
 using CryptoWallet.Interfaces;
 using System.Collections;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace CryptoWallet.Classes.Wallets
 {
     public abstract class Wallet : IWallet
     {
         public Guid Address { get; }
+
+        public string WalletType { get; set;  } // set??
 
         public Dictionary<Guid, double> AssetBalances { get; private set; }
 
@@ -22,13 +25,13 @@ namespace CryptoWallet.Classes.Wallets
         public Wallet()
         {
             Address = Guid.NewGuid();
+            WalletType = "";
             AllowedFungibleAssets = new();
             AssetBalances = new();
             TransactionHistory = new ArrayList();
         }
 
-
-        public virtual bool CreateNewFungibleAssetTransactionRecord(Wallet receiverWallet, Guid assetAddress, double amount)
+        public virtual bool CreateNewFungibleAssetTransactionRecord(IWallet receiverWallet, Guid assetAddress, double amount)
         {
             if (amount > AssetBalances[assetAddress])
             {
@@ -46,26 +49,25 @@ namespace CryptoWallet.Classes.Wallets
         }
 
 
-        public bool AddTransactionRecord(Wallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
+        public bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
         {
             TransactionHistory.Add(newTransaction);
             return true;
         }
 
-        public bool AddNonFungibleAssetTransactionRecord(Wallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction)
+        public bool AddNonFungibleAssetTransactionRecord(IWallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction)
         {
             TransactionHistory.Add(newTransaction);
             return true;
         }
 
-        public override string ToString() // enumerable
+        public override string ToString() 
         {
-            return $"--type-- wallet,\t\t--value change---";  // printanje usd vrijednosti
+            return $"{WalletType} wallet"; 
         }
 
 
-
-        public virtual double FungibleAssetsTotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
+        public virtual double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
             double totalAmount = 0;
             foreach (var item in AssetBalances)

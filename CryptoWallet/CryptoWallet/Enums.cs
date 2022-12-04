@@ -6,4 +6,14 @@
         ethereum,
         solana
     }
+
+    public enum AllowedFungibleAssetNames
+    {
+        bitcoin,
+        ethereum,
+        solana,
+        xrp,
+        tether,
+        // dodat ostale
+    }
 }

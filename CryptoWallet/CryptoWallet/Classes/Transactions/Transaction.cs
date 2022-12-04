@@ -15,18 +15,23 @@ namespace CryptoWallet.Classes.Transactions
 
         public Guid ReceiverAddress { get; }
 
-        public bool IsRevoked { get; private set; }
+        //protected bool IsRevoked { get; private set; }
 
-        public Transaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet)
+        public Transaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet)
         {
             Id = Guid.NewGuid();
             AssetAddress = assetAddress;
             DateOfTransaction = DateTime.Now;
             SenderAddress = senderWallet.Address;
             ReceiverAddress = receiverWallet.Address;
-            IsRevoked= false;
+            //IsRevoked= false;
         }
 
+        public override string ToString()
+        {
+            return $"{Id}\t{DateOfTransaction}\t{SenderAddress}\t{ReceiverAddress}--kolicina--\t--ime asseta--\t--IsRevoked";
+        }
+        /*
         public virtual bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet)
         {
             if (IsRevoked)
@@ -42,6 +47,6 @@ namespace CryptoWallet.Classes.Transactions
             receiverWallet?.OwnedNonFungibleAssets?.Remove(ReceiverAddress);
             IsRevoked = true;
             return true;
-        }
+        }*/
     }
 }

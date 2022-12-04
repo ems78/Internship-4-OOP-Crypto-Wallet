@@ -9,7 +9,7 @@ namespace CryptoWallet.Interfaces
         DateTime DateOfTransaction { get; }
         Guid SenderAddress { get; }
         Guid ReceiverAddress { get; }
-        bool IsRevoked { get; }
-        bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet);
+        //bool IsRevoked { get; }
+        //bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet);
     }
 }

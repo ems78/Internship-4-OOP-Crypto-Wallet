@@ -1,16 +1,17 @@
 ﻿using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Transactions;
+using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public class NonFungibleAssetSupportedWallet : Wallet
+    public class NonFungibleAssetSupportedWallet : Wallet, ISupportsNonFungibleAssets
     {
         public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
         public Dictionary<Guid, string> AllowedNonFungibleAssets { get; private set; }
 
         public List<string> AllowedAssetNames = new()
         {
-            "ethereum", "bitcoin", "solana", "xrp",  "tether"
+            "ethereum", "bitcoin", "solana", "xrp",  "tether"  // enum?
         };
 
         public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList)
@@ -23,7 +24,7 @@ namespace CryptoWallet.Classes.Wallets
             OwnedNonFungibleAssets = new Dictionary<Guid, string>();
         }
 
-        public bool CreateNewNonFungibleTransaction(Wallet receiverWallet, Guid assetAddress)
+        public bool CreateNewNonFungibleTransaction(IWallet receiverWallet, Guid assetAddress)
         {
             if (!OwnedNonFungibleAssets.ContainsKey(assetAddress))
             {
@@ -40,11 +41,14 @@ namespace CryptoWallet.Classes.Wallets
             return false;
         }
 
-        /*
-        public override double TotalValueInUSD()
+        public override double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
-            // + non fungible asset value
-            return base.TotalValueInUSD();
-        }*/
+            foreach (var item in OwnedNonFungibleAssets)
+            {   
+                // zbrojit vrijednosti svakog NFA 
+            }
+            // nadodat na vrijednosti FA
+            return base.TotalValueInUSD(fungibleAssetList);
+        }
     }
 }

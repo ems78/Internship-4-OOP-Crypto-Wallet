@@ -4,6 +4,7 @@ using CryptoWallet.Classes.Transactions;
 using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 using System.Collections;
+using System.Reflection;
 
 
 static int UserInput(string typeOfInput)
@@ -325,32 +326,52 @@ static void TransactionHistory(Dictionary<string, IWallet> allWallets, string wa
         }
 
         ITransaction transaction = allWallets[walletAddress].TransactionHistory[transactionIDGuid];
+        
+        /*
         if (transaction.TransactionType == "fungible")
         {
-            FungibleAssetTransaction t = (FungibleAssetTransaction)transaction;
-            IWallet sender = allWallets[t.SenderAddress.ToString()];
-            IWallet receiver = allWallets[t.ReceiverAddress.ToString()];
+            //FungibleAssetTransaction t = (FungibleAssetTransaction)transaction;
+            IWallet sender = allWallets[transaction.SenderAddress.ToString()];
+            IWallet receiver = allWallets[transaction.ReceiverAddress.ToString()];
             
+
+            /*
             if (!t.RevokeTransaction((Wallet)sender, (Wallet)receiver))
             {
                 ResultOfAction("Revoking failed"); 
                 return;
             }
+
+            if (!transaction.RevokeTransaction(sender, receiver))
+            {
+                ResultOfAction("Revoking failed");
+                return;
+            }
+
             ResultOfAction("Success");
             return;
-        }
+        }*/
 
-        NonFungibleAssetTransaction t1 = (NonFungibleAssetTransaction)transaction;
-        IWallet sender1 = allWallets[t1.SenderAddress.ToString()];
-        IWallet receiver1 = allWallets[t1.ReceiverAddress.ToString()];
+        //NonFungibleAssetTransaction t1 = (NonFungibleAssetTransaction)transaction;
+        IWallet sender = allWallets[transaction.SenderAddress.ToString()];
+        IWallet receiver = allWallets[transaction.ReceiverAddress.ToString()];
 
+        /*
         if (!t1.RevokeTransaction(sender1, receiver1))
         {
             ResultOfAction("Revoking failed");
             return;
+        }*/
+
+        if (!transaction.RevokeTransaction(sender, receiver))
+        {
+            ResultOfAction("Revoking failed");
+            return;
         }
+
         ResultOfAction("Success");
         return;
+
     }
 }
 

@@ -13,16 +13,15 @@ namespace CryptoWallet.Classes.Transactions
 
         public double FinalReceiverBalance { get; private set; }
 
-        public bool IsRevoked { get; private set; }
 
         public FungibleAssetTransaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet, double transactionAmount) : base(assetAddress, senderWallet, receiverWallet)
         {
+            TransactionType = CryptoWallet.TransactionType.fungible.ToString();
             StartingSenderBalance = senderWallet.AssetBalances[assetAddress];
             StartingReceiverBalance = receiverWallet.AssetBalances[assetAddress];
             FinalSenderBalance = CalculateEndingBalance(true, StartingSenderBalance, transactionAmount);
             FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
-            IsRevoked= false;
-            TransactionType = CryptoWallet.TransactionType.fungible.ToString();
+            IsRevoked = false;
         }
 
         private static double CalculateEndingBalance(bool isSender, double startingAmount, double transactionAmount)
@@ -33,7 +32,7 @@ namespace CryptoWallet.Classes.Transactions
             return startingAmount + transactionAmount;
         }
 
-        public bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
+        public override bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
         {
             if (IsRevoked) return false;
             else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)

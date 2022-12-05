@@ -33,20 +33,18 @@ namespace CryptoWallet.Classes.Wallets
 
         public virtual bool CreateNewFungibleAssetTransactionRecord(IWallet receiverWallet, Guid assetAddress, double amount)
         {
-            if (amount > AssetBalances[assetAddress])
-            {
-                return false;
-            }
-            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress))
-            {
-                return false;
-            }
+            if (amount > AssetBalances[assetAddress]) return false;
 
+            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
+            
             FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             if (receiverWallet.AddTransactionRecord(this, assetAddress, newTransaction)) return true;
             return false;
         }
+
+        // metoda koja provjerava jeli adresa FA ili NFA. ovisno o tome poziva
+        // ili metodu za FAT ili NFAT
 
 
         public bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)

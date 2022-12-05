@@ -7,7 +7,7 @@ namespace CryptoWallet.Classes.Transactions
     {
         public Guid Id { get; }
 
-        public string TransactionType { get; set;  } // set? 
+        public string TransactionType { get; protected set;  } 
 
         public Guid AssetAddress { get; }
 
@@ -17,7 +17,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public Guid ReceiverAddress { get; }
 
-        //protected bool IsRevoked { get; private set; }
+        public bool IsRevoked { get; protected set; }
 
         public Transaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet)
         {
@@ -27,12 +27,17 @@ namespace CryptoWallet.Classes.Transactions
             SenderAddress = senderWallet.Address;
             ReceiverAddress = receiverWallet.Address;
             TransactionType = "";
-            //IsRevoked= false;
+            IsRevoked = false;
         }
 
         public override string ToString()
         {
             return $"{Id}\t{DateOfTransaction}\t{SenderAddress}\t{ReceiverAddress}--kolicina--\t--ime asseta--\t--IsRevoked";
+        }
+
+        public virtual bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
+        {
+            return false ;  
         }
     }
 }

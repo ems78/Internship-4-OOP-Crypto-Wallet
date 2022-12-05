@@ -5,13 +5,10 @@ namespace CryptoWallet.Classes.Transactions
 {
     public class NonFungibleAssetTransaction : Transaction
     {
-        public bool IsRevoked { get; private set; }
-
-
         public NonFungibleAssetTransaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet) : base(assetAddress, senderWallet, receiverWallet)
         {
             TransactionType = CryptoWallet.TransactionType.nonFungible.ToString();
-            IsRevoked= false;
+            IsRevoked = false;
             TransferAsset(assetAddress, senderWallet, receiverWallet);
         }
 
@@ -21,12 +18,9 @@ namespace CryptoWallet.Classes.Transactions
             receiverWallet.OwnedNonFungibleAssets?.Add(assetAddress);
         }
 
-        public bool RevokeTransaction(IWallet senderWaller, IWallet receiverWallet)
+        public override bool RevokeTransaction(IWallet senderWaller, IWallet receiverWallet)
         {
-            if (IsRevoked)
-            {
-                return false;
-            }
+            if (IsRevoked) return false;
             else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
             {
                 return false;

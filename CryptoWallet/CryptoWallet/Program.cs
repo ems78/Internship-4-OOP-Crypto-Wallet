@@ -175,7 +175,7 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
     allWallets.TryGetValue(walletAddress, out IWallet? wallet);
 
     // neradi metoda za izracunavanje ukupne vrijednosti 
-    Dictionary<string, double> valueChanges = Class1.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
+    Dictionary<string, double> valueChanges = HelperClass.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
         
     Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD} \n\nBalances:");
 
@@ -185,7 +185,7 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
         {
             continue;
         }
-        Console.WriteLine($"{Class1.assetNames[assetBalance.Key]} - {assetBalance.Value}");
+        Console.WriteLine($"{HelperClass.assetNames[assetBalance.Key]} - {assetBalance.Value}");
     }
 
     Console.WriteLine("\nChanges in values: ");
@@ -223,10 +223,10 @@ static string AddressInput(Dictionary<string, IWallet> allWallets, Dictionary<st
         case "asset":
             while (true)
             {
-                string? assetAddressString = Console.ReadLine(); // ode zapne i neide dalje
+                string? assetAddressString = Console.ReadLine();
                 
-                Console.WriteLine(Class1.assetNames.ContainsKey(Guid.Parse(assetAddressString!)));
-                if (Class1.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || Class1.NFassetNames.ContainsKey(Guid.Parse(assetAddressString!))) // fungibleAssetList.ContainsKey(assetAddressString!) || nonFungibleAssetList.ContainsKey(assetAddressString!))
+                Console.WriteLine(HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)));
+                if (HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NFassetNames.ContainsKey(Guid.Parse(assetAddressString!))) // fungibleAssetList.ContainsKey(assetAddressString!) || nonFungibleAssetList.ContainsKey(assetAddressString!))
                 {
                     return assetAddressString!;
                 }
@@ -248,8 +248,8 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
     Guid assetAddress = Guid.Parse(assetAddressString);
 
     Random r = new();
-    double percentage = Class1.NextDouble(r, -0.5, 0.5);
-    bool fungible = Class1.assetNames.ContainsKey(assetAddress);
+    double percentage = HelperClass.NextDouble(r, -0.5, 0.5);
+    bool fungible = HelperClass.assetNames.ContainsKey(assetAddress);
 
     if (fungible)
     {
@@ -266,7 +266,7 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
 
         if (allWallets[SenderWalletAddress].CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, amount))
         {
-            fungibleAssetList[Class1.assetNames[assetAddress]].Value += fungibleAssetList[Class1.assetNames[assetAddress]].Value * percentage;
+            fungibleAssetList[HelperClass.assetNames[assetAddress]].Value += fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * percentage;
             ResultOfAction("Success");
             return;
         }
@@ -288,7 +288,7 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
 }
 
 static void TransactionHistory(Dictionary<string, IWallet> allWallets, string walletAddress)
-{ // ne spremaju se transakcije
+{
     Console.Clear();
     foreach (var transaction in allWallets[walletAddress].TransactionHistory)
     {
@@ -317,42 +317,8 @@ static void TransactionHistory(Dictionary<string, IWallet> allWallets, string wa
         }
 
         ITransaction transaction = allWallets[walletAddress].TransactionHistory[transactionIDGuid];
-        
-        /*
-        if (transaction.TransactionType == "fungible")
-        {
-            //FungibleAssetTransaction t = (FungibleAssetTransaction)transaction;
-            IWallet sender = allWallets[transaction.SenderAddress.ToString()];
-            IWallet receiver = allWallets[transaction.ReceiverAddress.ToString()];
-            
-
-            /*
-            if (!t.RevokeTransaction((Wallet)sender, (Wallet)receiver))
-            {
-                ResultOfAction("Revoking failed"); 
-                return;
-            }
-
-            if (!transaction.RevokeTransaction(sender, receiver))
-            {
-                ResultOfAction("Revoking failed");
-                return;
-            }
-
-            ResultOfAction("Success");
-            return;
-        }*/
-
-        //NonFungibleAssetTransaction t1 = (NonFungibleAssetTransaction)transaction;
         IWallet sender = allWallets[transaction.SenderAddress.ToString()];
         IWallet receiver = allWallets[transaction.ReceiverAddress.ToString()];
-
-        /*
-        if (!t1.RevokeTransaction(sender1, receiver1))
-        {
-            ResultOfAction("Revoking failed");
-            return;
-        }*/
 
         if (!transaction.RevokeTransaction(sender, receiver))
         {
@@ -382,7 +348,7 @@ static void SeedData(Dictionary<string, IWallet> allWallets, Dictionary<string, 
 
     foreach (var asset in fungibleAssetList)
     {
-        Class1.assetNames.Add(asset.Value.Address, asset.Key);
+        HelperClass.assetNames.Add(asset.Value.Address, asset.Key);
     }
 
     BitcoinWallet bitcoinWallet1 = new(fungibleAssetList);
@@ -429,7 +395,7 @@ static void SeedData(Dictionary<string, IWallet> allWallets, Dictionary<string, 
 
     foreach (var asset in nonFungibleAssetList)
     {
-        Class1.NFassetNames.Add(asset.Value.Address, asset.Key);
+        HelperClass.NFassetNames.Add(asset.Value.Address, asset.Key);
     }
 }
 

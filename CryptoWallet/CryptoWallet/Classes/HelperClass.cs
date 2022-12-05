@@ -2,7 +2,7 @@
 
 namespace CryptoWallet.Classes
 {
-    public static class Class1
+    public static class HelperClass
     {
         public static Dictionary<Guid, string> assetNames = new() { };
 
@@ -35,9 +35,7 @@ namespace CryptoWallet.Classes
                 double percentage = valueChangeInPercentage[asset.NameOfCurrenyValue];
                 asset.Value += asset.Value * percentage / 100;
             }
-
             return valueChangeInPercentage;
         }
-
     }
 }

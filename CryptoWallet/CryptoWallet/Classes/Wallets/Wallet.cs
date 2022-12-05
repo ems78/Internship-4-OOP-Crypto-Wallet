@@ -10,7 +10,7 @@ namespace CryptoWallet.Classes.Wallets
     {
         public Guid Address { get; }
 
-        public string WalletType { get; set;  } // set??
+        public string WalletType { get; protected set;  } 
 
         public Dictionary<Guid, double> AssetBalances { get; private set; }
 
@@ -33,18 +33,9 @@ namespace CryptoWallet.Classes.Wallets
             TransactionHistory = new();
         }
 
+
         public virtual bool CreateNewTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
-        {/*
-            if (amount > AssetBalances[assetAddress]) return false;
-
-            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
-            
-            FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
-            TransactionHistory.Add(newTransaction.Id, newTransaction);
-            if (receiverWallet.AddTransactionRecord(this, assetAddress, newTransaction)) return true;
-            return false;
-            */
-
+        {
             if (AllowedFungibleAssets.Contains(assetAddress))
             {
                 if (NewFungibleAssetTransaction(receiverWallet, assetAddress, amount)) return true;
@@ -59,8 +50,8 @@ namespace CryptoWallet.Classes.Wallets
             }
             Console.WriteLine("3");
             return false;
-            // metoda koja provjerava jeli adresa FA ili NFA. ovisno o tome poziva
-        }  // ili metodu za FAT ili NFAT
+        }  
+
 
         protected bool NewFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
         {
@@ -76,6 +67,7 @@ namespace CryptoWallet.Classes.Wallets
             }
             return false;
         }
+
 
         protected bool NewNonFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress)
         {
@@ -100,19 +92,6 @@ namespace CryptoWallet.Classes.Wallets
         }
 
 
-        /*
-        public bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
-        {
-            TransactionHistory.Add(newTransaction.Id, newTransaction);
-            return true;
-        }
-
-        public bool AddNonFungibleAssetTransactionRecord(IWallet senderWallet, Guid assetAddress, NonFungibleAssetTransaction newTransaction)
-        {
-            TransactionHistory.Add(newTransaction.Id, newTransaction);
-            return true;
-        }*/
-
         public override string ToString() 
         {
             return $"{WalletType} wallet"; 
@@ -130,7 +109,6 @@ namespace CryptoWallet.Classes.Wallets
                 }
                 totalAmount += item.Value * fungibleAssetList[item.Key.ToString()].GetValueInUSD();
             }
-
             return totalAmount;
         }
     }

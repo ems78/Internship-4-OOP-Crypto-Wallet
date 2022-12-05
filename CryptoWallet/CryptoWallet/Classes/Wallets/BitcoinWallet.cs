@@ -4,19 +4,14 @@ namespace CryptoWallet.Classes.Wallets
 {
     public class BitcoinWallet : Wallet
     {
-
-        private readonly List<string> _allowedAssetNames = new()
-        {
-            "ethereum", "bitcoin", "solana", "xrp",  "tether", "dogecoin", "polygon", "shibainu", "bnb", "cosmos"
-        };
-
         public BitcoinWallet(Dictionary<string, FungibleAsset> fungibleAssetList) 
         {
             WalletType = CryptoWallet.WalletType.bitcoin.ToString();
-            foreach (var item in _allowedAssetNames)
+
+            foreach (var item in fungibleAssetList)
             {
-                AllowedFungibleAssets.Add(fungibleAssetList[item].Address);
-                AssetBalances.Add(fungibleAssetList[item].Address, 5);
+                AllowedFungibleAssets.Add(item.Value.Address);
+                AssetBalances.Add(item.Value.Address, 5);
             }
         }
     }

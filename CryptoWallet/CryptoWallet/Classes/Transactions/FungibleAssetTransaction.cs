@@ -21,6 +21,7 @@ namespace CryptoWallet.Classes.Transactions
             StartingReceiverBalance = receiverWallet.AssetBalances[assetAddress];
             FinalSenderBalance = CalculateEndingBalance(true, StartingSenderBalance, transactionAmount);
             FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
+            Amount = transactionAmount;
             IsRevoked = false;
         }
 

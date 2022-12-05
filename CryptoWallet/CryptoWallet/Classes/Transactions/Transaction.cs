@@ -17,6 +17,8 @@ namespace CryptoWallet.Classes.Transactions
 
         public Guid ReceiverAddress { get; }
 
+        public double Amount { get; protected set; }
+
         public bool IsRevoked { get; protected set; }
 
         public Transaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet)
@@ -30,10 +32,12 @@ namespace CryptoWallet.Classes.Transactions
             IsRevoked = false;
         }
 
+
         public override string ToString()
         {
-            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: --kolicina--\n--ime asseta--\n--IsRevoked";
+            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: {Amount}\n{HelperClass.assetNames[AssetAddress]}--\nIs revoked: {IsRevoked}";
         }
+
 
         public virtual bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
         {

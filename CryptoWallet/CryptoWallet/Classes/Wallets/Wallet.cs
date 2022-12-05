@@ -12,7 +12,7 @@ namespace CryptoWallet.Classes.Wallets
 
         public string WalletType { get; protected set;  } 
 
-        public Dictionary<Guid, double> AssetBalances { get; private set; }
+        public Dictionary<Guid, double> AssetBalances { get; protected set; }
 
         public Dictionary<Guid, double> OwnedNonFungibleAssets { get; protected set; }
 
@@ -33,6 +33,15 @@ namespace CryptoWallet.Classes.Wallets
             TransactionHistory = new();
         }
 
+        private void AddToBalance(Guid assetAddress, double amount)
+        {
+            AssetBalances[assetAddress] += amount;
+        }
+
+        private void SubtractFromBalance(Guid assetAddress, double amount)
+        {
+            AssetBalances[assetAddress] -= amount;
+        }
 
         public virtual bool CreateNewTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
         {
@@ -62,6 +71,7 @@ namespace CryptoWallet.Classes.Wallets
 
             if (receiverWallet.AddNewTransaction((IWallet)this, assetAddress, newTransaction))
             {
+                SubtractFromBalance(assetAddress, amount);
                 TransactionHistory.Add(newTransaction.Id, newTransaction);
                 return true;
             }
@@ -87,6 +97,7 @@ namespace CryptoWallet.Classes.Wallets
 
         public bool AddNewTransaction(IWallet senderWallet, Guid assetAddress, ITransaction transaciton)
         {
+            AddToBalance(assetAddress, transaciton.Amount);
             TransactionHistory.Add(transaciton.Id, transaciton);
             return true;
         }
@@ -94,22 +105,19 @@ namespace CryptoWallet.Classes.Wallets
 
         public override string ToString() 
         {
-            return $"{WalletType} wallet"; 
+            return $"{Address} \t{WalletType}"; 
         }
 
 
-        public virtual double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
+        public virtual double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             double totalAmount = 0;
-            foreach (var item in AssetBalances)
+            foreach (var currencyKeyValuePair in AssetBalances)
             {
-                if (item.Value is 0)
-                {
-                    continue;
-                }
-                totalAmount += item.Value * fungibleAssetList[item.Key.ToString()].GetValueInUSD();
+                string assetName = HelperClass.assetNames[currencyKeyValuePair.Key];
+                totalAmount += currencyKeyValuePair.Value * fungibleAssetList[assetName].GetValueInUSD();
             }
-            return totalAmount;
+            return Math.Round(totalAmount, 2);
         }
     }
 }

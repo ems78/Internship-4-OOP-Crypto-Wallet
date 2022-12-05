@@ -1,6 +1,5 @@
 ﻿using CryptoWallet.Classes;
 using CryptoWallet.Classes.Assets;
-using CryptoWallet.Classes.Transactions;
 using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 using System.Collections;
@@ -126,12 +125,12 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
     {
         Console.Clear();
         Console.WriteLine("Wallet address\t\t\t\tWallet type");
-        // linija
+        HelperClass.PrintLine();
         foreach (var wallet in allWallets)
         {
-            Console.WriteLine(wallet.ToString());
+            Console.WriteLine($"{wallet.Value.ToString()} - Total value: {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)}");
         }
-        // linija
+        HelperClass.PrintLine();
 
         Console.Write("\nEnter the address of a wallet you want to access: ");
         string? walletAddress = Console.ReadLine();
@@ -196,7 +195,10 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
 
     if (allWallets[walletAddress].WalletType is not "bitcoin")
     {
-        // vrijednost NFA u USD
+        foreach (var item in allWallets[walletAddress].OwnedNonFungibleAssets)
+        {
+            Console.WriteLine($"{HelperClass.NonFungibleAssetNames[item.Key]}\n");
+        }
     }
 
     ResultOfAction("Success");
@@ -226,7 +228,7 @@ static string AddressInput(Dictionary<string, IWallet> allWallets, Dictionary<st
                 string? assetAddressString = Console.ReadLine();
                 
                 Console.WriteLine(HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)));
-                if (HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NFassetNames.ContainsKey(Guid.Parse(assetAddressString!))) // fungibleAssetList.ContainsKey(assetAddressString!) || nonFungibleAssetList.ContainsKey(assetAddressString!))
+                if (HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NonFungibleAssetNames.ContainsKey(Guid.Parse(assetAddressString!))) // fungibleAssetList.ContainsKey(assetAddressString!) || nonFungibleAssetList.ContainsKey(assetAddressString!))
                 {
                     return assetAddressString!;
                 }
@@ -263,10 +265,10 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
                 break;
             }
         }
-
         if (allWallets[SenderWalletAddress].CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, amount))
         {
-            fungibleAssetList[HelperClass.assetNames[assetAddress]].Value += fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * percentage;
+            double newValue = fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * (1 + percentage);
+            fungibleAssetList[HelperClass.assetNames[assetAddress]].SetNewValue(newValue);
             ResultOfAction("Success");
             return;
         }
@@ -395,7 +397,7 @@ static void SeedData(Dictionary<string, IWallet> allWallets, Dictionary<string, 
 
     foreach (var asset in nonFungibleAssetList)
     {
-        HelperClass.NFassetNames.Add(asset.Value.Address, asset.Key);
+        HelperClass.NonFungibleAssetNames.Add(asset.Value.Address, asset.Key);
     }
 }
 

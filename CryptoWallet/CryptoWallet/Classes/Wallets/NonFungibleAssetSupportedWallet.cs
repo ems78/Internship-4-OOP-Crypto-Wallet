@@ -1,6 +1,4 @@
 ﻿using CryptoWallet.Classes.Assets;
-using CryptoWallet.Classes.Transactions;
-using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Wallets
 {
@@ -21,6 +19,23 @@ namespace CryptoWallet.Classes.Wallets
                 AllowedNonFungibleAssets.Add(item.Value.Address);
                 // owned ??
             }
+        }
+
+        public override double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
+        {
+            double total = 0;
+            /*
+            foreach (var item in nonFungibleAssetList)
+            {
+                total += item.Value.Value;
+            }*/
+            foreach (var item in OwnedNonFungibleAssets)
+            {
+                string nfaName = HelperClass.NonFungibleAssetNames[item.Key];
+                string faValueName = nonFungibleAssetList[nfaName].NameOfCurrenyValue;
+                total += nonFungibleAssetList[nfaName].Value * fungibleAssetList[faValueName].Value;
+            }
+            return Math.Round(base.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList) + total, 2);
         }
     }
 }

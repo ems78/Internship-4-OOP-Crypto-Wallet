@@ -4,12 +4,9 @@
     {
         public string Abbreviation { get; }  //  unique
 
-        public double Value { get; set; }  // ?? 
-
-        public FungibleAsset(string name, string abbreviation, double value) : base(name)
+        public FungibleAsset(string name, string abbreviation, double value) : base(name, value)
         {
             Abbreviation = abbreviation;
-            Value = value;
         }
 
         public double GetValueInUSD()

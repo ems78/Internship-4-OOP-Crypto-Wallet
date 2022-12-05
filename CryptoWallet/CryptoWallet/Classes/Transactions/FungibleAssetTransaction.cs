@@ -1,5 +1,4 @@
-﻿using CryptoWallet.Classes.Wallets;
-using CryptoWallet.Interfaces;
+﻿using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
 {

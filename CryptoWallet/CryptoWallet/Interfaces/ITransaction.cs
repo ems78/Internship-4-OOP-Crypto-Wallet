@@ -1,6 +1,4 @@
-﻿using CryptoWallet.Classes.Wallets;
-
-namespace CryptoWallet.Interfaces
+﻿namespace CryptoWallet.Interfaces
 {
     public interface ITransaction
     {

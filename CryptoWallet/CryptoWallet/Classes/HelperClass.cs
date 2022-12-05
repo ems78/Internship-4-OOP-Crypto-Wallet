@@ -6,7 +6,7 @@ namespace CryptoWallet.Classes
     {
         public static Dictionary<Guid, string> assetNames = new() { };
 
-        public static Dictionary<Guid, string> NFassetNames = new() { };
+        public static Dictionary<Guid, string> NonFungibleAssetNames = new() { };
 
         public static double NextDouble(this Random RandGenerator, double MinValue, double MaxValue)
         {
@@ -24,8 +24,8 @@ namespace CryptoWallet.Classes
                 double percentage = NextDouble(randomDouble, -6.7, 6.7);
                 valueChangeInPercentage.Add(currency.Key, percentage);
 
-                FungibleAsset cryotocurrency = currency.Value;
-                currency.Value.Value += currency.Value.Value * percentage / 100;
+                double newValue = currency.Value.Value * (1 + percentage / 100);
+                currency.Value.SetNewValue(newValue);
             }
 
             foreach (var nonFungibleAsset in nonFungibleAssetList)
@@ -33,9 +33,16 @@ namespace CryptoWallet.Classes
                 NonFungibleAsset asset = nonFungibleAsset.Value;
 
                 double percentage = valueChangeInPercentage[asset.NameOfCurrenyValue];
-                asset.Value += asset.Value * percentage / 100;
+
+                double newValue = nonFungibleAsset.Value.Value * (1 + percentage / 100);
+                asset.SetNewValue(newValue);
             }
             return valueChangeInPercentage;
+        }
+
+        public static void PrintLine()
+        {
+            Console.WriteLine("--------------------------------------------");
         }
     }
 }

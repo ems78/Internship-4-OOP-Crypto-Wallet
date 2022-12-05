@@ -15,6 +15,7 @@ namespace CryptoWallet.Classes.Wallets
             WalletType = CryptoWallet.WalletType.bitcoin.ToString();
             foreach (var item in _allowedAssetNames)
             {
+                AllowedFungibleAssets.Add(fungibleAssetList[item].Address);
                 AssetBalances.Add(fungibleAssetList[item].Address, 5);
             }
         }

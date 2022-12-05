@@ -243,57 +243,48 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
     Console.Clear();
 
     string receiverWalletAddress = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet");
-    string? assetAddressString;
-    Guid assetAddress;
+    Console.WriteLine("s");
+    string assetAddressString = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer");
+    Guid assetAddress = Guid.Parse(assetAddressString);
+
     Random r = new();
+    double percentage = Class1.NextDouble(r, -0.5, 0.5);
+    bool fungible = Class1.assetNames.ContainsKey(assetAddress);
 
-    while (true)
+    if (fungible)
     {
-        assetAddressString = AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer");
-
-        assetAddress = Guid.Parse(assetAddressString);
-
-        if (allWallets[SenderWalletAddress].WalletType is "bitcoin")
+        double amount;
+        while (true)
         {
-            break;
+            Console.Write("\nEnter the amount you want to transfer: ");
+
+            if (double.TryParse(Console.ReadLine(), out amount))
+            {
+                break;
+            }
         }
 
-        bool fungible = Class1.assetNames.ContainsKey(assetAddress);
-        // popravit transakcije
-
-
-        if (allWallets[SenderWalletAddress].WalletType is "ethereum")
+        if (allWallets[SenderWalletAddress].CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, amount))
         {
-            EthereumWallet wallet = (EthereumWallet)allWallets[SenderWalletAddress];
-            wallet.CreateNewNonFungibleTransaction(allWallets[receiverWalletAddress], assetAddress);
+            fungibleAssetList[Class1.assetNames[assetAddress]].Value += fungibleAssetList[Class1.assetNames[assetAddress]].Value * percentage;
             ResultOfAction("Success");
             return;
         }
-        SolanaWallet wallet1 = (SolanaWallet)allWallets[SenderWalletAddress];
-        wallet1.CreateNewNonFungibleTransaction(allWallets[receiverWalletAddress], assetAddress);
-        ResultOfAction("Success");
+        ResultOfAction("Transaction Failed.");
         return;
     }
 
-    double amount;
-    while (true)
+    if (allWallets[SenderWalletAddress].WalletType is "ethereum")
     {
-        Console.Write("\nEnter the amount you want to transfer: ");
-
-        if (double.TryParse(Console.ReadLine(), out amount))
-        {
-            break;
-        }
-    }
-
-    // nesto se sjebe ode
-    if (allWallets[SenderWalletAddress].CreateNewFungibleAssetTransactionRecord(allWallets[receiverWalletAddress], assetAddress, amount))
-    {
-        double percentage = Class1.NextDouble(r, -0.5, 0.5);
-        fungibleAssetList[assetAddress.ToString()].Value += fungibleAssetList[assetAddress.ToString()].Value * percentage;
+        EthereumWallet wallet = (EthereumWallet)allWallets[SenderWalletAddress];
+        wallet.CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, 1);
         ResultOfAction("Success");
+        return;
     }
-    ResultOfAction("Transaction Failed.");
+    SolanaWallet wallet1 = (SolanaWallet)allWallets[SenderWalletAddress];
+    wallet1.CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, 1);
+    ResultOfAction("Success");
+    return;
 }
 
 static void TransactionHistory(Dictionary<string, IWallet> allWallets, string walletAddress)

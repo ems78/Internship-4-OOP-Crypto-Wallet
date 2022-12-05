@@ -4,16 +4,17 @@ using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Wallets
 {
-    public class NonFungibleAssetSupportedWallet : Wallet, ISupportsNonFungibleAssets
+    public class NonFungibleAssetSupportedWallet : Wallet
     {
-        public new Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
-        public Dictionary<Guid, string> AllowedNonFungibleAssets { get; private set; }
+        //public Dictionary<Guid, string> OwnedNonFungibleAssets { get; private set; }
+        //public Dictionary<Guid, string> AllowedNonFungibleAssets { get; private set; }
 
         public List<string> AllowedAssetNames = new()
         {
             "ethereum", "bitcoin", "solana", "xrp",  "tether", "dogecoin", "polygon", "shibainu", "bnb", "cosmos"  // enum?
         };
 
+        
         public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             foreach (var item in AllowedAssetNames)
@@ -24,11 +25,12 @@ namespace CryptoWallet.Classes.Wallets
             AllowedNonFungibleAssets = new();
             foreach (var item in nonFungibleAssetList)
             {
-                AllowedNonFungibleAssets.Add(item.Value.Address, item.Value.Name);
+                AllowedNonFungibleAssets.Add(item.Value.Address);
             }
-            OwnedNonFungibleAssets = new Dictionary<Guid, string>();
+            //OwnedNonFungibleAssets = new Dictionary<Guid, string>();
         }
-
+        /*
+        
         public bool CreateNewNonFungibleTransaction(IWallet receiverWallet, Guid assetAddress)
         {
             if (!OwnedNonFungibleAssets.ContainsKey(assetAddress))
@@ -45,7 +47,7 @@ namespace CryptoWallet.Classes.Wallets
             if (receiverWallet.AddNonFungibleAssetTransactionRecord(this, assetAddress, newTransaciton)) return true;
             return false;
         }
-
+        
         public override double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
             foreach (var item in OwnedNonFungibleAssets)
@@ -54,6 +56,6 @@ namespace CryptoWallet.Classes.Wallets
             }
             // nadodat na vrijednosti FA
             return base.TotalValueInUSD(fungibleAssetList);
-        }
+        }*/
     }
 }

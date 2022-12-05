@@ -14,11 +14,11 @@ namespace CryptoWallet.Classes.Wallets
 
         public Dictionary<Guid, double> AssetBalances { get; private set; }
 
-        public List<Guid>? OwnedNonFungibleAssets { get; private set; }
+        public Dictionary<Guid, double> OwnedNonFungibleAssets { get; protected set; }
 
-        //public List<string> AllowedFungibleAssetNames { get; private set; }
+        public List<Guid> AllowedNonFungibleAssets { get; protected set; }
 
-        public List<Guid> AllowedFungibleAssets { get; }
+        public List<Guid> AllowedFungibleAssets { get; protected set; }
 
         public Dictionary<Guid, ITransaction> TransactionHistory { get; private set; }
 
@@ -27,12 +27,14 @@ namespace CryptoWallet.Classes.Wallets
             Address = Guid.NewGuid();
             WalletType = "";
             AllowedFungibleAssets = new();
+            AllowedNonFungibleAssets = new();
+            OwnedNonFungibleAssets = new();
             AssetBalances = new();
             TransactionHistory = new();
         }
 
-        public virtual bool CreateNewFungibleAssetTransactionRecord(IWallet receiverWallet, Guid assetAddress, double amount)
-        {
+        public virtual bool CreateNewTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
+        {/*
             if (amount > AssetBalances[assetAddress]) return false;
 
             if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
@@ -41,12 +43,64 @@ namespace CryptoWallet.Classes.Wallets
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             if (receiverWallet.AddTransactionRecord(this, assetAddress, newTransaction)) return true;
             return false;
+            */
+
+            if (AllowedFungibleAssets.Contains(assetAddress))
+            {
+                if (NewFungibleAssetTransaction(receiverWallet, assetAddress, amount)) return true;
+                Console.WriteLine("1");
+                return false;
+            }
+            else if (AllowedNonFungibleAssets.Contains(assetAddress))
+            {
+                if (NewNonFungibleAssetTransaction(receiverWallet, assetAddress)) return true;
+                Console.WriteLine("2");
+                return false;
+            }
+            Console.WriteLine("3");
+            return false;
+            // metoda koja provjerava jeli adresa FA ili NFA. ovisno o tome poziva
+        }  // ili metodu za FAT ili NFAT
+
+        protected bool NewFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
+        {
+            if (amount > AssetBalances[assetAddress]) return false;
+            if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
+
+            FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
+
+            if (receiverWallet.AddNewTransaction((IWallet)this, assetAddress, newTransaction))
+            {
+                TransactionHistory.Add(newTransaction.Id, newTransaction);
+                return true;
+            }
+            return false;
         }
 
-        // metoda koja provjerava jeli adresa FA ili NFA. ovisno o tome poziva
-        // ili metodu za FAT ili NFAT
+        protected bool NewNonFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress)
+        {
+            if (!OwnedNonFungibleAssets!.ContainsKey(assetAddress)) return false;
+            if (!receiverWallet.AllowedNonFungibleAssets.Contains(assetAddress)) return false;
+
+            NonFungibleAssetTransaction newTransaction = new(assetAddress, (IWallet)this, receiverWallet);
+            
+            if (receiverWallet.AddNewTransaction(this, assetAddress, newTransaction))
+            {
+                TransactionHistory.Add(newTransaction.Id, newTransaction);
+                return true;
+            }
+            return false;
+        }
 
 
+        public bool AddNewTransaction(IWallet senderWallet, Guid assetAddress, ITransaction transaciton)
+        {
+            TransactionHistory.Add(transaciton.Id, transaciton);
+            return true;
+        }
+
+
+        /*
         public bool AddTransactionRecord(IWallet senderWallet, Guid assetAddress, FungibleAssetTransaction newTransaction)
         {
             TransactionHistory.Add(newTransaction.Id, newTransaction);
@@ -57,7 +111,7 @@ namespace CryptoWallet.Classes.Wallets
         {
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             return true;
-        }
+        }*/
 
         public override string ToString() 
         {

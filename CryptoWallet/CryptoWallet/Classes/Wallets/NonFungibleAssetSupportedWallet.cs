@@ -6,12 +6,10 @@ namespace CryptoWallet.Classes.Wallets
     {
         public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
-            WalletType = CryptoWallet.WalletType.ethereum.ToString();
-
             foreach (var item in fungibleAssetList)
             {
                 AllowedFungibleAssets.Add(item.Value.Address);
-                AssetBalances.Add(item.Value.Address, 5);
+                AssetBalances.Add(item.Value.Address, HelperClass.NextDouble(new Random(), 0, 1.2));
             }
 
             foreach (var item in nonFungibleAssetList)
@@ -24,11 +22,6 @@ namespace CryptoWallet.Classes.Wallets
         public override double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             double total = 0;
-            /*
-            foreach (var item in nonFungibleAssetList)
-            {
-                total += item.Value.Value;
-            }*/
             foreach (var item in OwnedNonFungibleAssets)
             {
                 string nfaName = HelperClass.NonFungibleAssetNames[item.Key];

@@ -42,7 +42,7 @@ namespace CryptoWallet.Classes
 
         public static void PrintLine()
         {
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("--------------------------------------------------------------------------");
         }
     }
 }

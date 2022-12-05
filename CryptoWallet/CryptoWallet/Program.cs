@@ -2,8 +2,6 @@
 using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
-using System.Collections;
-using System.Reflection;
 
 
 static int UserInput(string typeOfInput)
@@ -42,7 +40,6 @@ static void PrintMenuOptions(Dictionary<string, List<string>> menuOptions, strin
     {
         Console.WriteLine($"{++i} - {item}");
     }
-    // linija
 }
 
 
@@ -124,11 +121,11 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
     while (true)
     {
         Console.Clear();
-        Console.WriteLine("Wallet address\t\t\t\tWallet type");
+        Console.WriteLine("Wallet address\t\t\t\tWallet type\t  Total value");
         HelperClass.PrintLine();
         foreach (var wallet in allWallets)
         {
-            Console.WriteLine($"{wallet.Value.ToString()} - Total value: {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)}");
+            Console.WriteLine($"{wallet.Value}  \t  {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)} $");
         }
         HelperClass.PrintLine();
 
@@ -170,28 +167,28 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
     Console.Clear();
-
     allWallets.TryGetValue(walletAddress, out IWallet? wallet);
 
-    // neradi metoda za izracunavanje ukupne vrijednosti 
     Dictionary<string, double> valueChanges = HelperClass.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
         
-    Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD} \n\nBalances:");
-
+    Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)}$ \n\nBalances:");
+    HelperClass.PrintLine();
     foreach (var assetBalance in wallet.AssetBalances)
     {
         if (assetBalance.Value is 0)
         {
             continue;
         }
-        Console.WriteLine($"{HelperClass.assetNames[assetBalance.Key]} - {assetBalance.Value}");
+        Console.WriteLine($"{HelperClass.assetNames[assetBalance.Key]}       \t {assetBalance.Value} {fungibleAssetList[HelperClass.assetNames[assetBalance.Key]].Abbreviation}");
     }
 
     Console.WriteLine("\nChanges in values: ");
+    HelperClass.PrintLine();
     foreach (var valueChanged in valueChanges)
     {
         Console.WriteLine($"{valueChanged.Key} - {valueChanged.Value}%");
     }
+    HelperClass.PrintLine();
 
     if (allWallets[walletAddress].WalletType is not "bitcoin")
     {
@@ -200,11 +197,9 @@ static void Portfolio(Dictionary<string, IWallet> allWallets, string walletAddre
             Console.WriteLine($"{HelperClass.NonFungibleAssetNames[item.Key]}\n");
         }
     }
-
     ResultOfAction("Success");
     return;
 }
-
 
 static string AddressInput(Dictionary<string, IWallet> allWallets, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, string typeOfAddress, string message)
 {
@@ -267,7 +262,7 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
         }
         if (allWallets[SenderWalletAddress].CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, amount))
         {
-            double newValue = fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * (1 + percentage);
+            double newValue = fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * (1 + percentage / 100);
             fungibleAssetList[HelperClass.assetNames[assetAddress]].SetNewValue(newValue);
             ResultOfAction("Success");
             return;
@@ -275,6 +270,12 @@ static void Transfer(Dictionary<string, IWallet> allWallets, string SenderWallet
         ResultOfAction("Transaction Failed.");
         return;
     }
+
+    NonFungibleAsset asset = nonFungibleAssetList[HelperClass.NonFungibleAssetNames[assetAddress]];
+    FungibleAsset assetValueInAsset = fungibleAssetList[HelperClass.assetNames[asset.AddressOfValue]];
+    Console.WriteLine($"Old value {assetValueInAsset.Value}"); // za testirat
+    assetValueInAsset.SetNewValue(assetValueInAsset.Value * (1 + percentage / 100));
+    Console.WriteLine($"New value {assetValueInAsset.Value}");
 
     if (allWallets[SenderWalletAddress].WalletType is "ethereum")
     {
@@ -363,11 +364,10 @@ static void SeedData(Dictionary<string, IWallet> allWallets, Dictionary<string, 
     SolanaWallet solanaWallet2 = new(fungibleAssetList, nonFungibleAssetList);
     SolanaWallet solanaWallet3 = new(fungibleAssetList, nonFungibleAssetList);
 
-
     allWallets.Add(bitcoinWallet1.Address.ToString(), bitcoinWallet1);
     allWallets.Add(bitcoinWallet2.Address.ToString(), bitcoinWallet2);
     allWallets.Add(bitcoinWallet3.Address.ToString(), bitcoinWallet3);
-    allWallets.Add(ethereumWallet1.Address.ToString(), ethereumWallet2);
+    allWallets.Add(ethereumWallet1.Address.ToString(), ethereumWallet1);
     allWallets.Add(ethereumWallet2.Address.ToString(), ethereumWallet2);
     allWallets.Add(ethereumWallet3.Address.ToString(), ethereumWallet3);
     allWallets.Add(solanaWallet1.Address.ToString(), solanaWallet1);

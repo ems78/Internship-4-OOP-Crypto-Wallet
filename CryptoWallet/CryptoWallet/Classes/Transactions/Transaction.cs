@@ -33,12 +33,6 @@ namespace CryptoWallet.Classes.Transactions
         }
 
 
-        public override string ToString()
-        {
-            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: {Amount}\n{HelperClass.assetNames[AssetAddress]}--\nIs revoked: {IsRevoked}";
-        }
-
-
         public virtual bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
         {
             return false ;  

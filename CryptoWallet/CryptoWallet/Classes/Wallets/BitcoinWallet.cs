@@ -11,7 +11,7 @@ namespace CryptoWallet.Classes.Wallets
             foreach (var item in fungibleAssetList)
             {
                 AllowedFungibleAssets.Add(item.Value.Address);
-                AssetBalances.Add(item.Value.Address, 5);
+                AssetBalances.Add(item.Value.Address, HelperClass.NextDouble(new Random(), 0, 1.2));
             }
         }
     }

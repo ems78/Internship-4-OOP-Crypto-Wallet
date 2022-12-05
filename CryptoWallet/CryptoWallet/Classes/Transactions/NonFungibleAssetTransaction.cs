@@ -31,5 +31,10 @@ namespace CryptoWallet.Classes.Transactions
             IsRevoked = true;
             return true;
         }
+
+        public override string ToString()
+        {
+            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\n{HelperClass.NonFungibleAssetNames[AssetAddress]}\nIs revoked: {IsRevoked}";
+        }
     }
 }

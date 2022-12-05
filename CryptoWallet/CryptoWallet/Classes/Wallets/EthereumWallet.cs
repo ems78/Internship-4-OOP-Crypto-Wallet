@@ -7,7 +7,7 @@ namespace CryptoWallet.Classes.Wallets
     {
         public EthereumWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList) : base (fungibleAssetList, nonFungibleAssetList)
         {
-
+            WalletType = CryptoWallet.WalletType.ethereum.ToString();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace CryptoWallet.Classes.Wallets
 
         public Dictionary<Guid, ITransaction> TransactionHistory { get; private set; }
 
-        public Wallet()
+        public Wallet(Dictionary<string, FungibleAsset> fungibleAssetList)
         {
             Address = Guid.NewGuid();
             WalletType = "";
@@ -30,6 +30,11 @@ namespace CryptoWallet.Classes.Wallets
             AllowedNonFungibleAssets = new();
             OwnedNonFungibleAssets = new();
             AssetBalances = new();
+            foreach (var item in fungibleAssetList)
+            {
+                AllowedFungibleAssets.Add(item.Value.Address);
+                AssetBalances.Add(item.Value.Address, HelperClass.NextDouble(new Random(), 0, 1.2));
+            }
             TransactionHistory = new();
         }
 
@@ -48,19 +53,15 @@ namespace CryptoWallet.Classes.Wallets
             if (AllowedFungibleAssets.Contains(assetAddress))
             {
                 if (NewFungibleAssetTransaction(receiverWallet, assetAddress, amount)) return true;
-                Console.WriteLine("1");
                 return false;
             }
             else if (AllowedNonFungibleAssets.Contains(assetAddress))
             {
                 if (NewNonFungibleAssetTransaction(receiverWallet, assetAddress)) return true;
-                Console.WriteLine("2");
                 return false;
             }
-            Console.WriteLine("3");
             return false;
         }  
-
 
         protected bool NewFungibleAssetTransaction(Wallet receiverWallet, Guid assetAddress, double amount)
         {
@@ -68,16 +69,10 @@ namespace CryptoWallet.Classes.Wallets
             if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
 
             FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
-
-            if (receiverWallet.AddNewTransaction(assetAddress, newTransaction))
-            {
-                SubtractFromBalance(assetAddress, amount);
-                TransactionHistory.Add(newTransaction.Id, newTransaction);
-                return true;
-            }
-            return false;
+            SubtractFromBalance(assetAddress, amount);
+            TransactionHistory.Add(newTransaction.Id, newTransaction);
+            return true;
         }
-
 
         protected bool NewNonFungibleAssetTransaction(Wallet receiverWallet, Guid assetAddress)
         {
@@ -85,46 +80,59 @@ namespace CryptoWallet.Classes.Wallets
             if (!receiverWallet.AllowedNonFungibleAssets.Contains(assetAddress)) return false;
 
             NonFungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet);
-            
-            if (receiverWallet.AddNewNonFungibleTransaction(assetAddress, newTransaction))
-            {
-                TransactionHistory.Add(newTransaction.Id, newTransaction);
-                return true;
-            }
-            return false;
+            OwnedNonFungibleAssets.Remove(assetAddress);
+            TransactionHistory.Add(newTransaction.Id, newTransaction);
+            return true;
         }
 
-
-        protected bool AddNewTransaction(Guid assetAddress, ITransaction transaciton)
+        protected void AddNewTransaction(Guid assetAddress, ITransaction transaciton)
         {
             AddToBalance(assetAddress, transaciton.Amount);
             TransactionHistory.Add(transaciton.Id, transaciton);
-            return true;
+            return;
         }
 
-        protected bool AddNewNonFungibleTransaction(Guid assetAddress, ITransaction transaction)
+        protected void AddNewNonFungibleTransaction(Guid assetAddress, ITransaction transaction)
         {
             OwnedNonFungibleAssets.Add(assetAddress, 1);
             TransactionHistory.Add(transaction.Id, transaction);
-            return true;
+            return;
         }
-
-
-        public override string ToString() 
-        {
-            return $"{Address} \t{WalletType}"; 
-        }
-
 
         public virtual double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             double totalAmount = 0;
             foreach (var currencyKeyValuePair in AssetBalances)
             {
-                string assetName = HelperClass.assetNames[currencyKeyValuePair.Key];
-                totalAmount += currencyKeyValuePair.Value * fungibleAssetList[assetName].GetValueInUSD();
+                totalAmount += currencyKeyValuePair.Value * HelperClass.fungibleAssets[currencyKeyValuePair.Key].GetValueInUSD();
             }
             return Math.Round(totalAmount, 2);
+        }
+
+        public virtual void PrintAssetBalances()
+        {
+            foreach (var assetBalance in AssetBalances)
+            {
+                FungibleAsset asset = HelperClass.fungibleAssets[assetBalance.Key];
+                if (assetBalance.Value is 0)
+                {
+                    continue;
+                }
+                Console.WriteLine($"{asset.Name}       \t {Math.Round(assetBalance.Value, 2)} {asset.Abbreviation}  \t  {asset.ValueChange}%");
+            }
+        }
+
+        public void PrintTransactionHistory()
+        {
+            foreach (var transactionRecord in TransactionHistory)
+            {
+                Console.WriteLine($"{transactionRecord}\n");
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{Address} \t{WalletType}";
         }
     }
 }

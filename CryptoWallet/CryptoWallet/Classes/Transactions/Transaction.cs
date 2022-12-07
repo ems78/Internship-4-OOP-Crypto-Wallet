@@ -33,10 +33,6 @@ namespace CryptoWallet.Classes.Transactions
             IsRevoked = false;
         }
 
-
-        public virtual bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
-        {
-            return false ;  
-        }
+        public abstract bool RevokeTransaction(Wallet requester, Wallet senderWallet, Wallet receiverWallet);
     }
 }

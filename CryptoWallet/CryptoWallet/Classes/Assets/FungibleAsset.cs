@@ -13,5 +13,13 @@
         {
             return Value;
         }
+
+        public override void TriggerValueChange()
+        {
+            double percentage = HelperClass.NextDouble(new Random(), -5, 5);
+            OldValue = Value;
+            Value = OldValue * (1 + percentage);
+            ValueChange = percentage;
+        }
     }
 }

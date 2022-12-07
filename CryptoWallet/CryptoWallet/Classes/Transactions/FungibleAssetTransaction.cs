@@ -14,7 +14,6 @@ namespace CryptoWallet.Classes.Transactions
 
         public double FinalReceiverBalance { get; private set; }
 
-
         public FungibleAssetTransaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet, double transactionAmount) : base(assetAddress, senderWallet, receiverWallet)
         {
             TransactionType = CryptoWallet.TransactionType.fungible.ToString();
@@ -24,6 +23,8 @@ namespace CryptoWallet.Classes.Transactions
             FinalReceiverBalance = CalculateEndingBalance(false, FinalSenderBalance, transactionAmount);
             Amount = transactionAmount;
             IsRevoked = false;
+            HelperClass.fungibleAssets[assetAddress].TriggerValueChange();
+            
         }
 
         private static double CalculateEndingBalance(bool isSender, double startingAmount, double transactionAmount)
@@ -34,13 +35,11 @@ namespace CryptoWallet.Classes.Transactions
             return startingAmount + transactionAmount;
         }
 
-        public override bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
+        public override bool RevokeTransaction(Wallet requester, Wallet senderWallet, Wallet receiverWallet)
         {
+            if (requester.Address != senderWallet.Address) return false;
             if (IsRevoked) return false;
-            else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)
-            {
-                return false;
-            }
+            if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45) return false;
 
             senderWallet.AssetBalances[AssetAddress] = StartingSenderBalance;
             receiverWallet.AssetBalances[AssetAddress] = StartingReceiverBalance;
@@ -50,7 +49,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public override string ToString()
         {
-            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: {Amount} {HelperClass.assetNames[AssetAddress]}\nIs revoked: {IsRevoked}";
+            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: {Amount} {HelperClass.fungibleAssets[AssetAddress].Abbreviation}\nIs revoked: {IsRevoked}";
         }
     }
 }

@@ -6,42 +6,15 @@ namespace CryptoWallet.Classes
 {
     public static class HelperClass
     {
-        public static Dictionary<Guid, string> assetNames = new() { };
+        public static Dictionary<Guid, FungibleAsset> fungibleAssets = new() { };
 
-        public static Dictionary<Guid, string> NonFungibleAssetNames = new() { };
-
+        public static Dictionary<Guid, NonFungibleAsset> NonFungibleAssets = new() { };
 
         public static double NextDouble(this Random RandGenerator, double MinValue, double MaxValue)
         {
             double result = RandGenerator.NextDouble() * (MaxValue - MinValue) + MinValue;
             return Math.Round(result, 2);
         }
-
-        public static Dictionary<string, double> UpdateCryptocurrencyValues(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
-        {
-            Dictionary<string, double> valueChangeInPercentage = new();
-
-            foreach (var currency in fungibleAssetList)
-            {                   
-                double percentage = NextDouble(new Random(), -6.7, 6.7);
-                valueChangeInPercentage.Add(currency.Key, percentage);
-
-                double newValue = currency.Value.Value * (1 + percentage / 100);
-                currency.Value.SetNewValue(newValue);
-            }
-
-            foreach (var nonFungibleAsset in nonFungibleAssetList)
-            {
-                NonFungibleAsset asset = nonFungibleAsset.Value;
-
-                double percentage = valueChangeInPercentage[asset.NameOfCurrenyValue];
-
-                double newValue = nonFungibleAsset.Value.Value * (1 + percentage / 100);
-                asset.SetNewValue(newValue);
-            }
-            return valueChangeInPercentage;
-        }
-
 
         public static void PrintLine()
         {
@@ -70,7 +43,7 @@ namespace CryptoWallet.Classes
                         Console.Write($"\nEnter the address of {message}: ");
                         string? assetAddressString = Console.ReadLine();
 
-                        if (HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NonFungibleAssetNames.ContainsKey(Guid.Parse(assetAddressString!)))
+                        if (HelperClass.fungibleAssets.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NonFungibleAssets.ContainsKey(Guid.Parse(assetAddressString!)))
                         {
                             return assetAddressString!;
                         }

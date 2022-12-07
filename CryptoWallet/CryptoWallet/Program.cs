@@ -125,7 +125,8 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
         HelperClass.PrintLine();
         foreach (var wallet in allWallets)
         {
-            Console.WriteLine($"{wallet.Value}  \t  {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)} $");
+            Console.WriteLine($"\n\n{wallet.Value}  \t  {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)} $\n");
+            wallet.Value.PrintAssetBalances();
         }
         HelperClass.PrintLine();
 
@@ -163,34 +164,19 @@ static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddres
     Console.Clear();
     allWallets.TryGetValue(walletAddress, out Wallet? wallet);
 
-
-    //Dictionary<string, double> valueChanges = HelperClass.UpdateCryptocurrencyValues(fungibleAssetList, nonFungibleAssetList);
-        
     Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)}$ \n\nBalances:");
     HelperClass.PrintLine();
-    foreach (var assetBalance in wallet.AssetBalances)
-    {
-        if (assetBalance.Value is 0)
-        {
-            continue;
-        }
-        Console.WriteLine($"{HelperClass.assetNames[assetBalance.Key]}       \t {assetBalance.Value} {fungibleAssetList[HelperClass.assetNames[assetBalance.Key]].Abbreviation}");
-    }
-    /*
-    Console.WriteLine("\nChanges in values: ");
-    HelperClass.PrintLine();
-    foreach (var valueChanged in valueChanges)
-    {
-        Console.WriteLine($"{valueChanged.Key} - {valueChanged.Value}%");
-    }
-    */
+    
+    wallet.PrintAssetBalances();
+    
     HelperClass.PrintLine();
 
-    if (allWallets[walletAddress].WalletType is not "bitcoin")
+    if (wallet.WalletType is not "bitcoin")
     {
-        foreach (var item in allWallets[walletAddress].OwnedNonFungibleAssets)
+        Console.WriteLine("\n* Non fungible assets:\n");
+        foreach (var item in wallet.OwnedNonFungibleAssets)
         {
-            Console.WriteLine($"{HelperClass.NonFungibleAssetNames[item.Key]}\n");
+            Console.WriteLine($"{HelperClass.NonFungibleAssets[item.Key].Name}");
         }
     }
     ResultOfAction("Success");
@@ -201,16 +187,12 @@ static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddres
 static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
     Console.Clear();
-
-    string receiverWalletAddress = HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet");
+    Wallet senderWallet = allWallets[SenderWalletAddress];
+    Wallet receiverWallet = allWallets[HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet")];
     Console.WriteLine("s");
-    string assetAddressString = HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer");
-    Guid assetAddress = Guid.Parse(assetAddressString);
-
-    Random r = new();
-    double percentage = HelperClass.NextDouble(r, -0.5, 0.5);
-    bool fungible = HelperClass.assetNames.ContainsKey(assetAddress);
-
+    Guid assetAddress = Guid.Parse(HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer"));
+    
+    bool fungible = HelperClass.fungibleAssets.ContainsKey(assetAddress);
     if (fungible)
     {
         double amount;
@@ -223,32 +205,15 @@ static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletA
                 break;
             }
         }
-        if (allWallets[SenderWalletAddress].CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, amount))
+        if (senderWallet.CreateNewTransaction(receiverWallet, assetAddress, amount))
         {
-            double newValue = fungibleAssetList[HelperClass.assetNames[assetAddress]].Value * (1 + percentage / 100);
-            fungibleAssetList[HelperClass.assetNames[assetAddress]].SetNewValue(newValue);
             ResultOfAction("Success");
             return;
         }
         ResultOfAction("Transaction Failed.");
         return;
     }
-
-    NonFungibleAsset asset = nonFungibleAssetList[HelperClass.NonFungibleAssetNames[assetAddress]];
-    FungibleAsset assetValueInAsset = fungibleAssetList[HelperClass.assetNames[asset.AddressOfValue]];
-    Console.WriteLine($"Old value {assetValueInAsset.Value}"); 
-    assetValueInAsset.SetNewValue(assetValueInAsset.Value * (1 + percentage / 100));
-    Console.WriteLine($"New value {Math.Round(assetValueInAsset.Value)}");
-
-    if (allWallets[SenderWalletAddress].WalletType is "ethereum")
-    {
-        EthereumWallet wallet = (EthereumWallet)allWallets[SenderWalletAddress];
-        wallet.CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, 1);
-        ResultOfAction("Success");
-        return;
-    }
-    SolanaWallet wallet1 = (SolanaWallet)allWallets[SenderWalletAddress];
-    wallet1.CreateNewTransaction(allWallets[receiverWalletAddress], assetAddress, 1);
+    senderWallet.CreateNewTransaction(receiverWallet, assetAddress, 1);
     ResultOfAction("Success");
     return;
 }
@@ -256,10 +221,8 @@ static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletA
 static void TransactionHistory(Dictionary<string, Wallet> allWallets, string walletAddress)
 {
     Console.Clear();
-    foreach (var transaction in allWallets[walletAddress].TransactionHistory)
-    {
-        Console.WriteLine($"{transaction}\n");
-    }
+    Wallet senderWallet = allWallets[walletAddress];
+    senderWallet.PrintTransactionHistory();
 
     Console.WriteLine("1 - Revoke a transaction\n2 - Return to main menu");
 
@@ -269,33 +232,30 @@ static void TransactionHistory(Dictionary<string, Wallet> allWallets, string wal
     }
     
     string? transactionID;
+    Guid transactionIDGuid;
     while (true)
     {
         Console.Write("\nEnter the ID of the transaction you want to revoke: ");
         transactionID = Console.ReadLine();
-        if (!Guid.TryParse(transactionID, out Guid transactionIDGuid))
+        if (!Guid.TryParse(transactionID, out transactionIDGuid))
         {
             continue;
         }
-        if (!allWallets[walletAddress].TransactionHistory.ContainsKey(transactionIDGuid))
+        if (senderWallet.TransactionHistory.ContainsKey(transactionIDGuid))
         {
-            continue;
+            break;
         }
-
-        ITransaction transaction = allWallets[walletAddress].TransactionHistory[transactionIDGuid];
-        Wallet sender = allWallets[transaction.SenderAddress.ToString()];
-        Wallet receiver = allWallets[transaction.ReceiverAddress.ToString()];
-
-        if (!transaction.RevokeTransaction(sender, receiver))
-        {
-            ResultOfAction("Revoking failed");
-            return;
-        }
-
-        ResultOfAction("Success");
-        return;
-
     }
+    ITransaction transaction = senderWallet.TransactionHistory[transactionIDGuid];
+    Wallet receiverWallet = allWallets[transaction.ReceiverAddress.ToString()];
+
+    if (!transaction.RevokeTransaction(allWallets[walletAddress], senderWallet, receiverWallet))
+    {
+        ResultOfAction("Revoking failed");
+        return;
+    }
+    ResultOfAction("Success");
+    return;
 }
 
 

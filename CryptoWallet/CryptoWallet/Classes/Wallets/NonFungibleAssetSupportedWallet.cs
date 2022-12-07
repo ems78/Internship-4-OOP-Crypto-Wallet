@@ -4,14 +4,8 @@ namespace CryptoWallet.Classes.Wallets
 {
     public class NonFungibleAssetSupportedWallet : Wallet
     {
-        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, List<NonFungibleAsset> ownedNonFungibleAssets)
+        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, List<NonFungibleAsset> ownedNonFungibleAssets) : base (fungibleAssetList)
         {
-            foreach (var item in fungibleAssetList)
-            {
-                AllowedFungibleAssets.Add(item.Value.Address);
-                AssetBalances.Add(item.Value.Address, HelperClass.NextDouble(new Random(), 0, 1.2));
-            }
-
             foreach (var item in nonFungibleAssetList)
             {
                 AllowedNonFungibleAssets.Add(item.Value.Address);
@@ -28,7 +22,7 @@ namespace CryptoWallet.Classes.Wallets
             double total = 0;
             foreach (var item in OwnedNonFungibleAssets)
             {
-                string nfaName = HelperClass.NonFungibleAssetNames[item.Key];
+                string nfaName = HelperClass.NonFungibleAssets[item.Key].Name;
                 string faValueName = nonFungibleAssetList[nfaName].NameOfCurrenyValue;
                 total += nonFungibleAssetList[nfaName].Value * fungibleAssetList[faValueName].Value;
             }

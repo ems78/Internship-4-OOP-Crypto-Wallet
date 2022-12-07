@@ -15,35 +15,35 @@ namespace CryptoWallet.Classes
             fungibleAssetList.Add("polygon", new FungibleAsset("polygon", "MATIC", 0.92));
             fungibleAssetList.Add("tether", new FungibleAsset("tether", "USDT", 1));
             fungibleAssetList.Add("solana", new FungibleAsset("solana", "SOL", 13.57));
-            fungibleAssetList.Add("shibainu", new FungibleAsset("shiba inu", "SHIB", 0.00000929));
+            fungibleAssetList.Add("shibainu", new FungibleAsset("shibainu", "SHIB", 0.00000929));
             fungibleAssetList.Add("bnb", new FungibleAsset("bnb", "BNB", 290.68));
             fungibleAssetList.Add("cosmos", new FungibleAsset("comsos", "ATOM", 10.22));
 
             foreach (var asset in fungibleAssetList)
             {
-                HelperClass.assetNames.Add(asset.Value.Address, asset.Key);
+                HelperClass.fungibleAssets.Add(asset.Value.Address, asset.Value);
             }
 
-            nonFungibleAssetList.Add("Moonbirds #1748", new NonFungibleAsset("Moonbirds #1748", 8.74, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("TerraformsLevel13", new NonFungibleAsset("TerraformsLevel13", 0.48, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Based Ghoul #5229", new NonFungibleAsset("Based Ghoul #5229", 0.12, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Character #2716", new NonFungibleAsset("Character #2716", 7.6, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Character #4241", new NonFungibleAsset("Character #4241", 5.1, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Character #586", new NonFungibleAsset("Character #586", 2.2, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Character #2671", new NonFungibleAsset("Character #2671", 0.55, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Where is Nyan ?", new NonFungibleAsset("Where is Nyan ?", 1.09, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("Celestial Reflections", new NonFungibleAsset("Celestial Reflections", 2.0, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("That Friday Night", new NonFungibleAsset("That Friday Night", 2.7, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #228", new NonFungibleAsset("PokePxls #228", 0.01, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #147", new NonFungibleAsset("PokePxls #147", 0.02, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #135", new NonFungibleAsset("PokePxls #135", 0.03, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #38", new NonFungibleAsset("PokePxls #38", 0.05, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #150", new NonFungibleAsset("PokePxls #150", 0.06, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #104", new NonFungibleAsset("PokePxls #104", 0.03, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("PokePxls #197GOLD", new NonFungibleAsset("PokePxls #197GOLD", 0.5, fungibleAssetList["ethereum"].Address, "ethereum"));
-            nonFungibleAssetList.Add("X471", new NonFungibleAsset("X471", 322.19, fungibleAssetList["bitcoin"].Address, "bitcoin"));
-            nonFungibleAssetList.Add("Hero Chest", new NonFungibleAsset("Hero Chest", 0.03, fungibleAssetList["bitcoin"].Address, "bitcoin"));
-            nonFungibleAssetList.Add("Enjin", new NonFungibleAsset("Enjin", 36.46, fungibleAssetList["solana"].Address, "solana"));
+            nonFungibleAssetList.Add("Moonbirds #1748", new NonFungibleAsset("Moonbirds #1748", 8.74, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("TerraformsLevel13", new NonFungibleAsset("TerraformsLevel13", 0.48, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Based Ghoul #5229", new NonFungibleAsset("Based Ghoul #5229", 0.12, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Character #2716", new NonFungibleAsset("Character #2716", 7.6, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Character #4241", new NonFungibleAsset("Character #4241", 5.1, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Character #586", new NonFungibleAsset("Character #586", 2.2, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Character #2671", new NonFungibleAsset("Character #2671", 0.55, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Where is Nyan ?", new NonFungibleAsset("Where is Nyan ?", 1.09, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("Celestial Reflections", new NonFungibleAsset("Celestial Reflections", 2.0, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("That Friday Night", new NonFungibleAsset("That Friday Night", 2.7, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #228", new NonFungibleAsset("PokePxls #228", 0.01, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #147", new NonFungibleAsset("PokePxls #147", 0.02, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #135", new NonFungibleAsset("PokePxls #135", 0.03, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #38", new NonFungibleAsset("PokePxls #38", 0.05, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #150", new NonFungibleAsset("PokePxls #150", 0.06, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #104", new NonFungibleAsset("PokePxls #104", 0.03, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("PokePxls #197GOLD", new NonFungibleAsset("PokePxls #197GOLD", 0.5, fungibleAssetList["ethereum"], "ethereum"));
+            nonFungibleAssetList.Add("X471", new NonFungibleAsset("X471", 322.19, fungibleAssetList["bitcoin"], "bitcoin"));    
+            nonFungibleAssetList.Add("Hero Chest", new NonFungibleAsset("Hero Chest", 0.03, fungibleAssetList["bitcoin"], "bitcoin"));
+            nonFungibleAssetList.Add("Enjin", new NonFungibleAsset("Enjin", 36.46, fungibleAssetList["solana"], "solana"));
 
             BitcoinWallet bitcoinWallet1 = new(fungibleAssetList);
             BitcoinWallet bitcoinWallet2 = new(fungibleAssetList);
@@ -109,7 +109,7 @@ namespace CryptoWallet.Classes
 
             foreach (var asset in nonFungibleAssetList)
             {
-                HelperClass.NonFungibleAssetNames.Add(asset.Value.Address, asset.Key);
+                HelperClass.NonFungibleAssets.Add(asset.Value.Address, asset.Value);
             }
         }
     }

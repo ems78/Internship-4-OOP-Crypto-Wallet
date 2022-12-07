@@ -12,6 +12,6 @@ namespace CryptoWallet.Interfaces
         Guid ReceiverAddress { get; }
         double Amount { get; }
         bool IsRevoked { get; }
-        bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet);
+        bool RevokeTransaction(Wallet requester, Wallet senderWaller, Wallet receiverWallet);
     }
 }

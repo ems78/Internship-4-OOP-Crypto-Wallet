@@ -1,24 +1,25 @@
-﻿using CryptoWallet.Classes.Wallets;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
 {
     public class NonFungibleAssetTransaction : Transaction
     {
-        public NonFungibleAssetTransaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet) : base(assetAddress, senderWallet, receiverWallet)
+        public NonFungibleAssetTransaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet) : base(assetAddress, senderWallet, receiverWallet)
         {
             TransactionType = CryptoWallet.TransactionType.nonFungible.ToString();
             IsRevoked = false;
             TransferAsset(assetAddress, senderWallet, receiverWallet);
         }
 
-        private void TransferAsset(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet)
+        private void TransferAsset(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet)
         {
             senderWallet.OwnedNonFungibleAssets?.Remove(assetAddress);
             receiverWallet.OwnedNonFungibleAssets?.Add(assetAddress, 1);
         }
 
-        public override bool RevokeTransaction(IWallet senderWaller, IWallet receiverWallet)
+        public override bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet)
         {
             if (IsRevoked) return false;
             else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)

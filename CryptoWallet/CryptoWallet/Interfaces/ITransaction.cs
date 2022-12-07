@@ -1,4 +1,6 @@
-﻿namespace CryptoWallet.Interfaces
+﻿using CryptoWallet.Classes.Wallets;
+
+namespace CryptoWallet.Interfaces
 {
     public interface ITransaction
     {
@@ -10,6 +12,6 @@
         Guid ReceiverAddress { get; }
         double Amount { get; }
         bool IsRevoked { get; }
-        bool RevokeTransaction(IWallet senderWaller, IWallet receiverWallet);
+        bool RevokeTransaction(Wallet senderWaller, Wallet receiverWallet);
     }
 }

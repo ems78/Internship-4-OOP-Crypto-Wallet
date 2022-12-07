@@ -4,7 +4,7 @@ namespace CryptoWallet.Classes.Wallets
 {
     public class NonFungibleAssetSupportedWallet : Wallet
     {
-        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
+        public NonFungibleAssetSupportedWallet(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, List<NonFungibleAsset> ownedNonFungibleAssets)
         {
             foreach (var item in fungibleAssetList)
             {
@@ -15,7 +15,11 @@ namespace CryptoWallet.Classes.Wallets
             foreach (var item in nonFungibleAssetList)
             {
                 AllowedNonFungibleAssets.Add(item.Value.Address);
-                // owned ??
+            }
+
+            foreach (var item in ownedNonFungibleAssets)
+            {
+                OwnedNonFungibleAssets.Add(item.Address, 1);                    
             }
         }
 

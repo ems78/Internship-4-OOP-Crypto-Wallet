@@ -1,4 +1,5 @@
-﻿using CryptoWallet.Classes.Wallets;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
@@ -21,7 +22,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public bool IsRevoked { get; protected set; }
 
-        public Transaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet)
+        public Transaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet)
         {
             Id = Guid.NewGuid();
             AssetAddress = assetAddress;
@@ -33,7 +34,7 @@ namespace CryptoWallet.Classes.Transactions
         }
 
 
-        public virtual bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
+        public virtual bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
         {
             return false ;  
         }

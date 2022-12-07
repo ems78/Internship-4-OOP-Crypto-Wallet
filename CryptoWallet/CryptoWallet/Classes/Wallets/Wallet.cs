@@ -43,7 +43,7 @@ namespace CryptoWallet.Classes.Wallets
             AssetBalances[assetAddress] -= amount;
         }
 
-        public virtual bool CreateNewTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
+        public virtual bool CreateNewTransaction(Wallet receiverWallet, Guid assetAddress, double amount)
         {
             if (AllowedFungibleAssets.Contains(assetAddress))
             {
@@ -62,14 +62,14 @@ namespace CryptoWallet.Classes.Wallets
         }  
 
 
-        protected bool NewFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress, double amount)
+        protected bool NewFungibleAssetTransaction(Wallet receiverWallet, Guid assetAddress, double amount)
         {
             if (amount > AssetBalances[assetAddress]) return false;
             if (!receiverWallet.AllowedFungibleAssets.Contains(assetAddress)) return false;
 
             FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
 
-            if (receiverWallet.AddNewTransaction((IWallet)this, assetAddress, newTransaction))
+            if (receiverWallet.AddNewTransaction(assetAddress, newTransaction))
             {
                 SubtractFromBalance(assetAddress, amount);
                 TransactionHistory.Add(newTransaction.Id, newTransaction);
@@ -79,14 +79,14 @@ namespace CryptoWallet.Classes.Wallets
         }
 
 
-        protected bool NewNonFungibleAssetTransaction(IWallet receiverWallet, Guid assetAddress)
+        protected bool NewNonFungibleAssetTransaction(Wallet receiverWallet, Guid assetAddress)
         {
             if (!OwnedNonFungibleAssets!.ContainsKey(assetAddress)) return false;
             if (!receiverWallet.AllowedNonFungibleAssets.Contains(assetAddress)) return false;
 
-            NonFungibleAssetTransaction newTransaction = new(assetAddress, (IWallet)this, receiverWallet);
+            NonFungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet);
             
-            if (receiverWallet.AddNewTransaction(this, assetAddress, newTransaction))
+            if (receiverWallet.AddNewNonFungibleTransaction(assetAddress, newTransaction))
             {
                 TransactionHistory.Add(newTransaction.Id, newTransaction);
                 return true;
@@ -95,10 +95,17 @@ namespace CryptoWallet.Classes.Wallets
         }
 
 
-        public bool AddNewTransaction(IWallet senderWallet, Guid assetAddress, ITransaction transaciton)
+        protected bool AddNewTransaction(Guid assetAddress, ITransaction transaciton)
         {
             AddToBalance(assetAddress, transaciton.Amount);
             TransactionHistory.Add(transaciton.Id, transaciton);
+            return true;
+        }
+
+        protected bool AddNewNonFungibleTransaction(Guid assetAddress, ITransaction transaction)
+        {
+            OwnedNonFungibleAssets.Add(assetAddress, 1);
+            TransactionHistory.Add(transaction.Id, transaction);
             return true;
         }
 

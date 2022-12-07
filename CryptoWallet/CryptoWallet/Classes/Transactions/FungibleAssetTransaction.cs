@@ -1,4 +1,6 @@
-﻿using CryptoWallet.Interfaces;
+﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Wallets;
+using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
 {
@@ -13,7 +15,7 @@ namespace CryptoWallet.Classes.Transactions
         public double FinalReceiverBalance { get; private set; }
 
 
-        public FungibleAssetTransaction(Guid assetAddress, IWallet senderWallet, IWallet receiverWallet, double transactionAmount) : base(assetAddress, senderWallet, receiverWallet)
+        public FungibleAssetTransaction(Guid assetAddress, Wallet senderWallet, Wallet receiverWallet, double transactionAmount) : base(assetAddress, senderWallet, receiverWallet)
         {
             TransactionType = CryptoWallet.TransactionType.fungible.ToString();
             StartingSenderBalance = senderWallet.AssetBalances[assetAddress];
@@ -32,7 +34,7 @@ namespace CryptoWallet.Classes.Transactions
             return startingAmount + transactionAmount;
         }
 
-        public override bool RevokeTransaction(IWallet senderWallet, IWallet receiverWallet)
+        public override bool RevokeTransaction(Wallet senderWallet, Wallet receiverWallet)
         {
             if (IsRevoked) return false;
             else if ((DateTime.Now - DateOfTransaction).TotalSeconds > 45)

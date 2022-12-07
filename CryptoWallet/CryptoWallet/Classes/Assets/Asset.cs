@@ -6,7 +6,8 @@
 
         public string Name { get; }  // unique??
 
-        public double Value { get; private set; }
+        public double Value { get; protected set; }
+
 
         public Asset(string name, double value)
         {
@@ -17,7 +18,12 @@
 
         public void SetNewValue(double value)
         {
-            Value = value;
+            Value= value;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
     }
 }

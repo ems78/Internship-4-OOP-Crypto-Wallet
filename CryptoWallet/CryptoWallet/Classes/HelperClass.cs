@@ -1,4 +1,6 @@
 ﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Wallets;
+using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes
 {
@@ -7,6 +9,7 @@ namespace CryptoWallet.Classes
         public static Dictionary<Guid, string> assetNames = new() { };
 
         public static Dictionary<Guid, string> NonFungibleAssetNames = new() { };
+
 
         public static double NextDouble(this Random RandGenerator, double MinValue, double MaxValue)
         {
@@ -17,11 +20,10 @@ namespace CryptoWallet.Classes
         public static Dictionary<string, double> UpdateCryptocurrencyValues(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
         {
             Dictionary<string, double> valueChangeInPercentage = new();
-            Random randomDouble = new();
 
             foreach (var currency in fungibleAssetList)
             {                   
-                double percentage = NextDouble(randomDouble, -6.7, 6.7);
+                double percentage = NextDouble(new Random(), -6.7, 6.7);
                 valueChangeInPercentage.Add(currency.Key, percentage);
 
                 double newValue = currency.Value.Value * (1 + percentage / 100);
@@ -40,9 +42,43 @@ namespace CryptoWallet.Classes
             return valueChangeInPercentage;
         }
 
+
         public static void PrintLine()
         {
             Console.WriteLine("--------------------------------------------------------------------------");
+        }
+
+        public static string AddressInput(Dictionary<string, Wallet> allWallets, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList, string typeOfAddress, string message)
+        {
+            switch (typeOfAddress)
+            {
+                case "wallet":
+                    while (true)
+                    {
+                        Console.Write($"\nEnter the address of {message}: ");
+                        string? walletAddress = Console.ReadLine();
+
+                        if (allWallets.ContainsKey(walletAddress!))
+                        {
+                            return walletAddress!;
+                        }
+                    }
+
+                case "asset":
+                    while (true)
+                    {
+                        Console.Write($"\nEnter the address of {message}: ");
+                        string? assetAddressString = Console.ReadLine();
+
+                        if (HelperClass.assetNames.ContainsKey(Guid.Parse(assetAddressString!)) || HelperClass.NonFungibleAssetNames.ContainsKey(Guid.Parse(assetAddressString!)))
+                        {
+                            return assetAddressString!;
+                        }
+                    }
+
+                default:
+                    return "";
+            }
         }
     }
 }

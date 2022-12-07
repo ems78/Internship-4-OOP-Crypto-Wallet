@@ -1,4 +1,5 @@
 ﻿using CryptoWallet.Classes.Assets;
+using CryptoWallet.Classes.Wallets;
 
 namespace CryptoWallet.Interfaces
 {
@@ -12,7 +13,8 @@ namespace CryptoWallet.Interfaces
         List<Guid> AllowedNonFungibleAssets { get; }
         Dictionary<Guid, ITransaction> TransactionHistory { get; }
         double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList);
-        bool CreateNewTransaction(IWallet receiverWallet, Guid assetAddress, double amount);
-        bool AddNewTransaction(IWallet senderWallet, Guid assetAddress, ITransaction transaction);
+        bool CreateNewTransaction(Wallet receiverWallet, Guid assetAddress, double amount);
+        //bool AddNewTransaction(Guid assetAddress, ITransaction transaction);
+        //bool AddNewNonFungibleTransaction(Guid assetAddress, ITransaction transaction);
     }
 }

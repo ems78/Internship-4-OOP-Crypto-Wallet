@@ -123,9 +123,10 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
         Console.Clear();
         Console.WriteLine("Wallet address\t\t\t\tWallet type\t  Total value");
         HelperClass.PrintLine();
+
         foreach (var wallet in allWallets)
         {
-            Console.WriteLine($"\n\n{wallet.Value}  \t  {wallet.Value.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)} $\n");
+            Console.WriteLine($"\n\n{wallet.Value}\n");
             wallet.Value.PrintAssetBalances();
         }
         HelperClass.PrintLine();
@@ -162,23 +163,14 @@ static void AccessWallet(Dictionary<string, List<string>> menuOptions, Dictionar
 static void Portfolio(Dictionary<string, Wallet> allWallets, string walletAddress, Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
 {
     Console.Clear();
+
     allWallets.TryGetValue(walletAddress, out Wallet? wallet);
-
-    Console.WriteLine($"Total value in USD: {wallet!.TotalValueInUSD(fungibleAssetList, nonFungibleAssetList)}$ \n\nBalances:");
+    Console.WriteLine($"Total value in USD: \t {wallet!.TotalValueInUSD()} $");
     HelperClass.PrintLine();
-    
+
     wallet.PrintAssetBalances();
-    
     HelperClass.PrintLine();
 
-    if (wallet.WalletType is not "bitcoin")
-    {
-        Console.WriteLine("\n* Non fungible assets:\n");
-        foreach (var item in wallet.OwnedNonFungibleAssets)
-        {
-            Console.WriteLine($"{HelperClass.NonFungibleAssets[item.Key].Name}");
-        }
-    }
     ResultOfAction("Success");
     return;
 }
@@ -191,7 +183,7 @@ static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletA
     Wallet receiverWallet = allWallets[HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet")];
     Console.WriteLine("s");
     Guid assetAddress = Guid.Parse(HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer"));
-    
+
     bool fungible = HelperClass.fungibleAssets.ContainsKey(assetAddress);
     if (fungible)
     {
@@ -226,11 +218,11 @@ static void TransactionHistory(Dictionary<string, Wallet> allWallets, string wal
 
     Console.WriteLine("1 - Revoke a transaction\n2 - Return to main menu");
 
-    if (UserInput("a number to navigate the menu") is  2)
+    if (UserInput("a number to navigate the menu") is 2)
     {
         return;
     }
-    
+
     string? transactionID;
     Guid transactionIDGuid;
     while (true)
@@ -266,7 +258,7 @@ Dictionary<string, List<string>> menuOptions = new()
                 {"access wallet submenu", new List<string>() { "Portfolio", "Transfer", "Transaction history", "Return to main menu" } }
             };
 
-Dictionary<string, Wallet> allWallets = new(); 
+Dictionary<string, Wallet> allWallets = new();
 Dictionary<string, FungibleAsset> fungibleAssetList = new();
 Dictionary<string, NonFungibleAsset> nonFungibleAssetList = new();
 DataGeneration.GenerateData(allWallets, fungibleAssetList, nonFungibleAssetList);

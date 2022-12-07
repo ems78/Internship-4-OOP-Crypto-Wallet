@@ -1,8 +1,6 @@
 ﻿using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Transactions;
 using CryptoWallet.Interfaces;
-using System.Collections;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace CryptoWallet.Classes.Wallets
 {
@@ -10,7 +8,7 @@ namespace CryptoWallet.Classes.Wallets
     {
         public Guid Address { get; }
 
-        public string WalletType { get; protected set;  } 
+        public string WalletType { get; protected set; }
 
         public Dictionary<Guid, double> AssetBalances { get; protected set; }
 
@@ -61,7 +59,7 @@ namespace CryptoWallet.Classes.Wallets
                 return false;
             }
             return false;
-        }  
+        }
 
         protected bool NewFungibleAssetTransaction(Wallet receiverWallet, Guid assetAddress, double amount)
         {
@@ -70,6 +68,7 @@ namespace CryptoWallet.Classes.Wallets
 
             FungibleAssetTransaction newTransaction = new(assetAddress, this, receiverWallet, amount);
             SubtractFromBalance(assetAddress, amount);
+            receiverWallet.AddNewTransaction(assetAddress, newTransaction);
             TransactionHistory.Add(newTransaction.Id, newTransaction);
             return true;
         }
@@ -99,18 +98,19 @@ namespace CryptoWallet.Classes.Wallets
             return;
         }
 
-        public virtual double TotalValueInUSD(Dictionary<string, FungibleAsset> fungibleAssetList, Dictionary<string, NonFungibleAsset> nonFungibleAssetList)
+        public virtual double TotalValueInUSD()
         {
             double totalAmount = 0;
-            foreach (var currencyKeyValuePair in AssetBalances)
+            foreach (var item in AssetBalances)
             {
-                totalAmount += currencyKeyValuePair.Value * HelperClass.fungibleAssets[currencyKeyValuePair.Key].GetValueInUSD();
+                totalAmount += item.Value * HelperClass.fungibleAssets[item.Key].GetValueInUSD();
             }
             return Math.Round(totalAmount, 2);
         }
 
         public virtual void PrintAssetBalances()
         {
+            Console.WriteLine("\nBalances:");
             foreach (var assetBalance in AssetBalances)
             {
                 FungibleAsset asset = HelperClass.fungibleAssets[assetBalance.Key];
@@ -126,13 +126,13 @@ namespace CryptoWallet.Classes.Wallets
         {
             foreach (var transactionRecord in TransactionHistory)
             {
-                Console.WriteLine($"{transactionRecord}\n");
+                Console.WriteLine($"{transactionRecord.Value}\n");
             }
         }
 
         public override string ToString()
         {
-            return $"{Address} \t{WalletType}";
+            return $"{Address} \t{WalletType}  \t  {TotalValueInUSD()}$";
         }
     }
 }

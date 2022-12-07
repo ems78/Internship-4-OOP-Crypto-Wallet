@@ -34,7 +34,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public override string ToString()
         {
-            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\n{HelperClass.NonFungibleAssets[AssetAddress].Name}\nIs revoked: {IsRevoked}";
+            return $"Transaction ID:  \t{Id}\nDate and time:   \t{DateOfTransaction}\nSender:         \t{SenderAddress}\nReceiver:       \t{ReceiverAddress}\nAsset name:     \t{HelperClass.NonFungibleAssets[AssetAddress].Name}\nIs revoked:     \t{IsRevoked}";
         }
     }
 }

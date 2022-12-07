@@ -1,5 +1,4 @@
-﻿using CryptoWallet.Classes.Assets;
-using CryptoWallet.Classes.Wallets;
+﻿using CryptoWallet.Classes.Wallets;
 using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes.Transactions
@@ -8,7 +7,7 @@ namespace CryptoWallet.Classes.Transactions
     {
         public Guid Id { get; }
 
-        public string TransactionType { get; protected set;  } 
+        public string TransactionType { get; protected set; }
 
         public Guid AssetAddress { get; }
 

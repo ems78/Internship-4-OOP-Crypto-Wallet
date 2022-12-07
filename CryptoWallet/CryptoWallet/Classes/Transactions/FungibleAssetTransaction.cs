@@ -1,6 +1,4 @@
-﻿using CryptoWallet.Classes.Assets;
-using CryptoWallet.Classes.Wallets;
-using CryptoWallet.Interfaces;
+﻿using CryptoWallet.Classes.Wallets;
 
 namespace CryptoWallet.Classes.Transactions
 {
@@ -24,7 +22,7 @@ namespace CryptoWallet.Classes.Transactions
             Amount = transactionAmount;
             IsRevoked = false;
             HelperClass.fungibleAssets[assetAddress].TriggerValueChange();
-            
+
         }
 
         private static double CalculateEndingBalance(bool isSender, double startingAmount, double transactionAmount)
@@ -49,7 +47,7 @@ namespace CryptoWallet.Classes.Transactions
 
         public override string ToString()
         {
-            return $"\n{DateOfTransaction}\nSender: {SenderAddress}\nReceiver:{ReceiverAddress}\nAmount: {Amount} {HelperClass.fungibleAssets[AssetAddress].Abbreviation}\nIs revoked: {IsRevoked}";
+            return $"Transaction ID:  \t{Id}\nDate and time:   \t{DateOfTransaction}\nSender:         \t{SenderAddress}\nReceiver:       \t{ReceiverAddress}\nAmount:         \t{Amount} {HelperClass.fungibleAssets[AssetAddress].Abbreviation}\nIs revoked:     \t{IsRevoked}";
         }
     }
 }

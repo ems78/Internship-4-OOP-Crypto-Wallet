@@ -1,6 +1,5 @@
 ﻿using CryptoWallet.Classes.Assets;
 using CryptoWallet.Classes.Wallets;
-using CryptoWallet.Interfaces;
 
 namespace CryptoWallet.Classes
 {
@@ -41,7 +40,7 @@ namespace CryptoWallet.Classes
             nonFungibleAssetList.Add("PokePxls #150", new NonFungibleAsset("PokePxls #150", 0.06, fungibleAssetList["ethereum"], "ethereum"));
             nonFungibleAssetList.Add("PokePxls #104", new NonFungibleAsset("PokePxls #104", 0.03, fungibleAssetList["ethereum"], "ethereum"));
             nonFungibleAssetList.Add("PokePxls #197GOLD", new NonFungibleAsset("PokePxls #197GOLD", 0.5, fungibleAssetList["ethereum"], "ethereum"));
-            nonFungibleAssetList.Add("X471", new NonFungibleAsset("X471", 322.19, fungibleAssetList["bitcoin"], "bitcoin"));    
+            nonFungibleAssetList.Add("X471", new NonFungibleAsset("X471", 322.19, fungibleAssetList["bitcoin"], "bitcoin"));
             nonFungibleAssetList.Add("Hero Chest", new NonFungibleAsset("Hero Chest", 0.03, fungibleAssetList["bitcoin"], "bitcoin"));
             nonFungibleAssetList.Add("Enjin", new NonFungibleAsset("Enjin", 36.46, fungibleAssetList["solana"], "solana"));
 

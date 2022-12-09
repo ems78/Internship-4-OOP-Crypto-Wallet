@@ -181,7 +181,7 @@ static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletA
     Console.Clear();
     Wallet senderWallet = allWallets[SenderWalletAddress];
     Wallet receiverWallet = allWallets[HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "wallet", "reciever wallet")];
-    Console.WriteLine("s");
+    
     Guid assetAddress = Guid.Parse(HelperClass.AddressInput(allWallets, fungibleAssetList, nonFungibleAssetList, "asset", "the asset you want to transfer"));
 
     bool fungible = HelperClass.fungibleAssets.ContainsKey(assetAddress);
@@ -197,12 +197,25 @@ static void Transfer(Dictionary<string, Wallet> allWallets, string SenderWalletA
                 break;
             }
         }
+
+        if (!UserConfirmation("execute the transfer"))
+        {
+            ResultOfAction("Transfer cancelled");
+            return;
+        }
+
         if (senderWallet.CreateNewTransaction(receiverWallet, assetAddress, amount))
         {
             ResultOfAction("Success");
             return;
         }
         ResultOfAction("Transaction Failed.");
+        return;
+    }
+
+    if (!UserConfirmation("execute the transfer?"))
+    {
+        ResultOfAction("Transfer cancelled");
         return;
     }
     senderWallet.CreateNewTransaction(receiverWallet, assetAddress, 1);
@@ -240,6 +253,12 @@ static void TransactionHistory(Dictionary<string, Wallet> allWallets, string wal
     }
     ITransaction transaction = senderWallet.TransactionHistory[transactionIDGuid];
     Wallet receiverWallet = allWallets[transaction.ReceiverAddress.ToString()];
+
+    if (!UserConfirmation("revoke the transaction"))
+    {
+        ResultOfAction("Revoking cancelled");
+        return;
+    }
 
     if (!transaction.RevokeTransaction(allWallets[walletAddress], senderWallet, receiverWallet))
     {

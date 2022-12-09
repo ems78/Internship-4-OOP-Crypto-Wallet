@@ -54,7 +54,7 @@ namespace CryptoWallet.Classes.Wallets
                 return false;
             }
             else if (AllowedNonFungibleAssets.Contains(assetAddress))
-            {
+            {   
                 if (NewNonFungibleAssetTransaction(receiverWallet, assetAddress)) return true;
                 return false;
             }
